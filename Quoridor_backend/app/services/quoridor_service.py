@@ -2,7 +2,7 @@ from app.models.game import QuoridorGame
 
 class QuoridorService:
     def __init__(self):
-        self.game = QuoridorGame()
+        self.game = QuoridorGame() #quand c'est vide c'est 2 joueurs par defaut 
 
     def get_game_state(self):
         return self.game.get_game_state()

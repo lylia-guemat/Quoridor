@@ -1,18 +1,37 @@
 import random
+import logging
 from collections import deque
 from app.schemas.game_schema import Position, Wall, GameState, Player
 
-class QuoridorGame:
-    def __init__(self):
-        # Initialisation d'un plateau 9x9 (pour l'affichage, on garde un tableau simple)
-        self.board = [["" for _ in range(9)] for _ in range(9)]
+logger = logging.getLogger("quoridor")
 
-        # Initialisation des joueurs : joueur 1 au centre de la première ligne, joueur 2 au centre de la dernière ligne
-        self.players = [
-            Player(id=1, pawn=Position(x=4, y=0), remaining_walls=10),
-            Player(id=2, pawn=Position(x=4, y=8), remaining_walls=10)
-        ]
-        self.walls = []  # Liste des murs (objets Wall)
+class QuoridorGame:
+    def __init__(self, num_players: int = 2):
+
+        self.board = [["" for _ in range(9)] for _ in range(9)]
+        self.walls = []
+        self.num_players = num_players
+        self.game_over = False      # Indicateur de fin de partie
+        self.winner_id = None       # Identifiant du gagnant (None tant que la partie continue)
+
+        if num_players == 2:
+            # Positions standard pour 2 joueurs
+            self.players = [
+                Player(id=1, pawn=Position(x=4, y=0), remaining_walls=10),
+                Player(id=2, pawn=Position(x=4, y=8), remaining_walls=10)
+            ]
+        elif num_players == 4:
+            # Pour 4 joueurs, chaque joueur commence au centre d'un côté du plateau.
+            self.players = [
+                Player(id=1, pawn=Position(x=4, y=0), remaining_walls=5),
+                Player(id=2, pawn=Position(x=4, y=8), remaining_walls=5),
+                Player(id=3, pawn=Position(x=0, y=4), remaining_walls=5),
+                Player(id=4, pawn=Position(x=8, y=4), remaining_walls=5)
+            ]
+        else:
+            raise Exception("Le nombre de joueurs supporté est 2 ou 4 uniquement.")
+
+        #le premier tour est celui du joueur 1 (choix perso)
         self.current_turn = 1
 
 
@@ -21,7 +40,9 @@ class QuoridorGame:
             board=self.board,
             players=self.players,
             walls=self.walls,
-            current_turn=self.current_turn
+            current_turn=self.current_turn,
+            game_over=self.game_over,
+            winner_id=self.winner_id
         )
 
 
@@ -53,6 +74,7 @@ class QuoridorGame:
             return True
 
         return False
+    
 
 
     def is_valid_face_to_face_move(self, player: Player, new_pos: Position) -> bool:
@@ -141,8 +163,9 @@ class QuoridorGame:
             return False
 
         # Si aucun des cas face-à-face n'est satisfait, le saut n'est pas valide
-        return False    
+        return False
 
+    
 
     def wall_blocks_move(self, from_pos: Position, to_pos: Position) -> bool:
         # Pour chaque mur, vérifier s'il bloque le déplacement entre les deux cases
@@ -163,6 +186,11 @@ class QuoridorGame:
 
 
     def move_pawn(self, player_id: int, new_pos: dict):
+        logger.info(f"Déplacement demandé pour le joueur {player_id} vers {new_pos}")
+        
+        if self.game_over :
+            raise Exception("La partie est terminée, aucun autre coup n'est accepté.")
+
         # new_pos est un dictionnaire contenant x et y
         new_position = Position(**new_pos)
         player = next((p for p in self.players if p.id == player_id), None)
@@ -174,10 +202,43 @@ class QuoridorGame:
         # Déplacement du pion    
         player.pawn = new_position
 
-        # Condition de victoire : atteindre la ligne opposée
-        if (player.id == 1 and new_position.y == 8) or (player.id == 2 and new_position.y == 0):
-            print(f"Joueur {player.id} a gagné!")
+        # Vérifier la condition de victoire pour le joueur actuel
+        if self.has_won(player):
+            print(f"Le joueur {player.id} a gagné!")
+            self.game_over = True 
+            self.winner_id = player.id
+            return 
+                       
         self.switch_turn()
+
+
+
+    def has_won(self, player: Player) -> bool:
+        """
+        Détermine si le joueur a atteint le côté opposé.
+        Pour 2 joueurs, le joueur 1 doit atteindre y=8 et le joueur 2 y=0.
+        Pour 4 joueurs, on définit :
+        - Joueur 1 (haut) : victoire si y == 8
+        - Joueur 2 (bas)  : victoire si y == 0
+        - Joueur 3 (gauche): victoire si x == 8
+        - Joueur 4 (droite): victoire si x == 0
+        """
+        if self.num_players == 2:
+            if player.id == 1 and player.pawn.y == 8:
+                return True
+            if player.id == 2 and player.pawn.y == 0:
+                return True
+
+        elif self.num_players == 4:
+            if player.id == 1 and player.pawn.y == 8:
+                return True
+            if player.id == 2 and player.pawn.y == 0:
+                return True
+            if player.id == 3 and player.pawn.x == 8:
+                return True
+            if player.id == 4 and player.pawn.x == 0:
+                return True
+        return False
 
 
     def is_valid_wall(self, wall: Wall) -> bool:
@@ -284,10 +345,10 @@ class QuoridorGame:
 
 
     def switch_turn(self):
-        self.current_turn = 1 if self.current_turn == 2 else 2
+        self.current_turn = (self.current_turn % self.num_players) + 1
 
 
-    #L’IA présentée est très basique (choix aléatoire parmi les coups légaux), on va la modifier plus tard 
+    #L’IA est très basique (choix aléatoire parmi les coups légaux), on va la modifier plus tard 
     def ai_move(self):
         # Une IA simple qui effectue aléatoirement un coup légal
         current_player = next((p for p in self.players if p.id == self.current_turn), None)
@@ -300,7 +361,7 @@ class QuoridorGame:
             if 0 <= new_x < 9 and 0 <= new_y < 9 and self.is_valid_move(current_player, new_position):
                 legal_moves.append(("move", new_position))
         if current_player.remaining_walls > 0:
-            # Exemple simplifié : tester un mur en position fixe
+            # tester un mur en position fixe
             test_wall = Wall(position=Position(x=3, y=3), orientation="horizontal")
             if self.is_valid_wall(test_wall):
                 legal_moves.append(("wall", test_wall))

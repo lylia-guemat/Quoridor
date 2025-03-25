@@ -19,6 +19,8 @@ class GameState(BaseModel):
     players: List[Player]
     walls: List[Wall]
     current_turn: int
+    game_over: bool = False
+    winner_id: Optional[int] = None
 
 class Move(BaseModel):
     move_type: str  # "move" ou "wall"
