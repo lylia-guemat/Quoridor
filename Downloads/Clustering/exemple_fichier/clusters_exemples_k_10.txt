@@ -1,0 +1,220 @@
+
+--- Cluster 0 (tecalan interférence noir dair sur porte gaine mécanisme ventura jaune) ---
+1. tecalan en interférence
+2. reprendre les interférence en voussoir de porte 1 reprendre position du tecalan bleue
+3. tecalan et câble dans la cabine a fixer
+4. tecalan du vérin de secours en interférence sur le bloc trop court
+5. tecalan en interférence sur le coude
+6. reprendre position du tecalan de la cos en interférence sur le câble et sur le réparateur dair
+7. tecalan darrivée dair de la caa a reprendre et fixer le tecalan correctement un fois repositionné
+8. interférence tecalan sur tube de clim
+9. interférence tecalan bleu sur la pâte métallique
+10. interférence voussoir 3 tuyau en tecalan sur le support métallique
+11. tecalan dair derrière la main rouge frotte sur la gaine annelée jaune
+12. en position ouverture des vantaux porte deux interférence tecalan noir dair au dessus du mécanisme ventura
+13. interférence tecalan bleu à chaque mouvement de porte
+14. au niveau de la platine européenne interférence tecalan noir dair sur raccord détendeur
+15. interférence du tecalan sur le support
+16. interférence faisceau électrique sur tecalan noir dair et risque dêtre pris par le vérin du premier vantail porte une
+17. au niveau de la platine européenne interférence tecalan noir dair
+18. interférence tecalan bleu et rouge sur vérin à chaque mouvement de porte 2
+19. tecalan rouge dair en interférence avec le haut du pivot second vantail porte une
+20. au niveau de la platine européenne interférence tecalan noir dair sur gaine annelée jaune
+
+--- Cluster 1 (reprendre fixation serrage maintient sur trappe réglage gauche faisceau électrique) ---
+1. il faut reprendre la fixation du pivot du portillon celuici a un jeu important
+2. sur larriere droit une bose et quelque trace a reprendre
+3. il faut reprendre la protection du cablage de la valve de nivelement cote gauche essieux 2
+4. il faut reprendre la fixation du faisceaux du boitier sous chassis
+5. reprendre la fixation du boîtier tachygraphe celui ci bouge
+6. reprendre lhygiène du câble de puissance de lalternateur
+7. reprendre hygiène tablette côté droit
+8. reprendre passage câble rouge
+9. reprendre peinture en pied de cabine machiniste
+10. reprendre check link mal positionné
+11. reprendre fixationverrouillage de la partie parechoc arrière central basse
+12. reprendre position checklink
+13. reprendre interférences circuit liquide refroidissement ard
+14. reprendre alignements de la dernière trappe arrière gauche
+15. reprendre fixation dune prise dans la trappe
+16. reprendre protection du passage de câble
+17. reprendre la fixation du mobilité conducteur gauche
+18. reprendre partie saillante sous le fae
+19. reprendre fixation du siège 19
+20. reprendre interférences tuyau bleu dans voussoir de porte
+
+--- Cluster 2 (pas fonctionne tient porte sur correctement volet trappe éclairage rampe) ---
+1. pas de possibilité douvrir totalement la trappe girouette pas de sangle de maintien et la caméra empêche louverture totale de la trappe
+2. verrou de la trappe des accessoires au tableau de bord ne verrouille pas
+3. fermeture automatique en mode self ne fonctionne pas
+4. inter self extérieur ne fonctionne pas
+5. self du 2eme vantail de la porte 4 ne fonctionne pas intérieur
+6. écran dièdre voiture et remorque ne fonctionne pas
+7. demande darret poussette extérieur ne fonctionne pas hors mode self
+8. écran arrière de la remorque fonctionne mal par intermittence
+9. éclairage de porte 4 en mode nuit ne fonctionne pas
+10. écran voiture et remorque ne fonctionnent pas
+11. autobus ne démarre pas pas de carburant
+12. caméra ne fonctionne pas par intermittence affichage en bleu à la place de limage
+13. self extérieur avant de la porte 3 ne fonctionne pas
+14. verrou droit de la trappe girouette ne verrouille pas
+15. écran dièdre voiture et remorque ne fonctionne pas ils sallume et se coupent par intermittence sans afficher une image nette
+16. caméras de portes arrières ne fonctionne pas au poste de conduite
+17. écrans ne fonctionne pas en voiture et remorque
+18. pas de retour de langle mort arrière droit sur lécran au poste de conduite
+19. climatisation conducteur ne fonctionne pas ventilation conducteur ne fonctionne pas
+20. écrans voiture et remorque ne fonctionnent pas
+
+--- Cluster 3 (switch câbles boîtier serrage sur vidéo reprendre backbone des billetique) ---
+1. switch vidéo se coupe avant tempo
+2. 1 reprendre le serrage des prises  fms et entrée tor bougent 2 reprendre le serrage des câbles m12 sur boîtier switch vidéo surveillance
+3. câble m12 bouge sur switch backbone temporisé
+4. reprendre le serrage du câble m12 sur le boîtier switch billetique
+5. reprendre le serrage bdes câbles m12 sur les boitiers switch backbone permanenttemporisé
+6. switch backbone permanent non alimenté
+7. reprendre maintient de la connectique sur boîtier switch télebilletique
+8. reprendre serrage des câbles m12 sur les switchs backbone
+9. reprendre serrage câble m12 sur switch vidéo surveillance
+10. reprendre le serrage du câble m12 sur boîtier switch vidéo
+11. reprendre le serrage du câble m12 sur boîtier switch billetique
+12. 1 reprendre le serrage des prises sur boîtier sesaly 2 câbles m12 desserrés
+13. switch vidéo
+14. câbles m12 bougent sur switch vidéo
+15. câblages m12 bougent sur boîtier switch billetique
+16. câblages m12 bouge énormément sur boîtier switch vidéo surveillance
+17. câblages m12 sur boîtier switch vidéo bougent
+18. câblages m12 sur boîtier switch backbone temporisé bougent
+19. reprendre le serrage des câblages m12 sur boîtier vidéo surveillance
+20. reprendre le serrage des câblages m12 sur boîtier switch billetique
+
+--- Cluster 4 (interférence sur tuyau durite câblage flexible avec électrique gaine tube) ---
+1. il y a une interférence avec les tuyaux dair qui touche le support du boitier electronique de porte
+2. interférence sur le cablage de la porte une fois celleci ouverte
+3. reprendre le passage du tuyau dair qui alimente letrier de frein avd celui est en interférence sur le bras de suspension
+4. reprendre le passage du tuyau dair qui alimente letrier de frein avg celui est en interférence sur le bras de suspension
+5. interférence tuyau extincteur et tuyau transparent
+6. sur le pack batterie wagon 1 une interférence est présente sur la durite de refroidissement sur le chassis des pack batterie
+7. sur le pack batterie wagon 2 une interférence est présente sur la durite de refroidissement sur le chassis des pack batterie
+8. trappe latéral moteur coté gauche une interférence entre la durite de liquide de refroidissement sur la motrice la pate est monté a lenvers
+9. la protection pare boue est en interférence sur la transmission
+10. le faisceau qui alimente le bouton douverture de la porte 1 est en interférence entre le bouchon et la sonde de niveau dhuile de direction assitée
+11. dans le compartiment moteur coté gauche la durite de liquide de refroidissement est en interférence avec le cable haute tension
+12. dans le compartiment moteur coté gauche le collier et la durite de liquide de refroidissement est en interférence avec la cable haute tension
+13. la durite verte est en interférence avec la protection en cahoutchou
+14. la protection en cahoutchou ets en interférence avec la transmission
+15. il faut rallonger la protection sur le tuyau transparant qui est en interférence avec le tuyau métallique
+16. interférence câblage sur gaine annelée jaune en ouverture de porte
+17. interférence des tuyau dair du vérin sur la patin en équerre ouverture et fermeture
+18. interférence tuyau en cuivre sur laxe de pivot de porte en haut
+19. interférence flexible blindé sur conduitfaisceau électrique
+20. interférence faisceau électrique sur durite circuit dair
+
+--- Cluster 5 (porte vantail cos sur une fermeture pivot voussoir battant lors) ---
+1. avant dernier voussoir avant porte 4 tecalans dair en interfèrence sur le châssis dans la descente après la girouette arrière
+2. porte avant se met en défaut après quelques commandes ouverture fermeture
+3. présence dun point dur a louverture et a la fermeture du 1er vantail
+4. après avoir appuyé une première fois sur la demande de poussette le mode self de la porte 3 ne renferme plus la porte automatiquement
+5. en fin de fermeture la porte est bruyante et force pour verrouiller sa position
+6. habillage détérioré devant le voussoir de porte avant droit
+7. après avoir fait des déclenchement de sécurité la porte 3 ne fonctionne plus en mode automatique ce problème est régulier sur cette porte et se produit par intermittence
+8. porte 1 le vantail avant ne se ferme pas
+9. il est souhaitable quun balai soit monté sur lencombrement du voussoir de louverture de la porte 1
+10. la mousse qui canalise la ventilation sur le voussoir de la porte 2 est décollé
+11. il faut reprendre lecartement douverture de la porte 2 vantail 1 par rapport a la rampe ufr celleci souvre pas a la limite de la rampe ufr comme sur le vantail 2
+12. le bord sensible ne fonctionne plus arriver a mis course de la fermeture de la porte
+13. la barre de maintien cote gauche a la porte 2 est abimé
+14. enlever le scoth sur le seuil de la porte
+15. le vantail avant de la porte 2 sarrete sur la rampe ufr alors que la vantail arriere sarrete a ras
+16. suite au jeu anormal en haut et bas cela a détériore le joint supérieur de la porte 1
+17. la porte 1 a un  jeu anormal et important en haut et bas
+18. le vantail 1 de la porte 2 reste ouvert sur 5cm au dessus de la rampe ufr contrairement au vantail 2 qui lui souvre au bord de la rampe
+19. a louverture du voussoir de la porte 4 le cablage de larret demandé ce débranche
+20. le montant de la porte 2 coté vantail 1 la decoupe du plastique de protection est pas uniforme au planché
+
+--- Cluster 6 (sur gauche siège bouge mal niveau dans support fixation absence) ---
+1. 
+2. 
+3. jgoohfiyfiyfu
+4. aaaaaaa
+5. test 4
+6. test parentalite anomalies
+7. test3
+8. test2
+9. test_old
+10. test 0504
+11. adhésif se décolle à cause de la surface granuleuse du support
+12. adhésif non complété avec lattestation daménagement
+13. boitier électronique dans le 1 er voussoir droit à refixer
+14. absence de la plaque de tare et du coc permettant de la remplir
+15. baie arrière cassée
+16. détection fixée sur une tubulende refroidissement par collier plastique a reprendre le faire detector ne doit pas être en contact direct avec une potentielle source de chaleur
+17. adhésifs se décolle à cause du support granuleux
+18. tuyaux de climatisation vibrent dans le dernier voussoir gauche
+19. condensat de climatisation dans le 4eme voussoir gauche remonte et ne peux pas évacuer leau
+20. écrou de la serrure de la face avant à resserrer
+
+--- Cluster 7 (les sur dans sont retirer des pas porte tous portes) ---
+1. réservoirs dair en voussoirs droit et gauche non conforme à la réglementation les sangles de maintien ne doivent pas être de type ferraille mais avoir une protection
+2. écran de contrôle des portes au poste de conduite naffiche pas les portes marché arrière et angle mort fonctionnent problème se produit par intermittence après redémarrage du véhicule
+3. isoler les fils blanc et marron au dessus de luc ineo
+4. éclairage voyageur les deux positions de linter allume entièrement léclairage voyageur
+5. écran des portes naffiche pas les portes arrières lorsque elles sont ouvertes
+6. fixer correctement le moniteur dangle mort droit  les vis de fixation du support sont desserrées
+7. habillage au dessus de la custode arrière non fixé correctement côté droit les 2 vis ne sont pas serrées
+8. écran de vidéosurveillance naffiche pas toutes les caméras
+9. poste machiniste cote gauche sur les interrupteur rouge avec cache aviation de sans secu et inibition fae merci de mettre un plombage sur chaque cache pour eviter que le machiniste puisse actionner les intérrupteur par inadvertance
+10. les cables de masse de la vis du milieu bouge la vis est pas assez serré
+11. les bras de portes touche sur la carrosserie en ouverture vantail av et ar
+12. a lavant du bus en dessous le relais qui est branché avec des cables 24v les vis et ecrous ne sont pas protégé
+13. les doubles sieges dans le wagon2 cote gauche est rayé
+14. il faut reprendre les éléments de carrosserie rayé au niveau de lessieux 3
+15. reprendre les rayures sur la trappe de charge
+16. le levier fae enlever et les portes ouverte le bus avance
+17. les vis ne sont pas serrées du portebagage côté droit après la porte 1
+18. il faut néttoyer les traces de peinture sur la jantes du 3em essieu g
+19. il faut mettre une protection sur les fils de linterrupteur darret de charge cote gauche de la trappe moteur
+20. mettre du mastic sur les pieds droite et gauche de porte pour éviter toute infiltration deau porte2
+
+--- Cluster 8 (manque sur vis les protection boîtier prise fixation bouchon signalétique) ---
+1. manque inter de réarmement des commandes de secours au poste de conduite
+2. manque une sangle de maintien sur la trappe girouette après louverture de la trappe celle ci viens en appuie sur la caméra
+3. manque adhésif droit et gauche
+4. manque caoutchouc de maintien de la trappe extincteur
+5. manque le cache vinyle sur lécran pour lanti reflet
+6. manque le plombage sur linter de déverrouillage durgence des freins
+7. manque les clés du lot de bord carré et clé conducteur
+8. manque la plaque de tare
+9. manque les clés du lots de bord
+10. manque les clés du conducteur
+11. manque plombage de linter de maintenance inhibition des freins
+12. manque lampe autonome
+13. manque les clés du lot de bord
+14. il manque la couverture de protection sur la génératrice electrique
+15. il manque du produit anticorrosion sur le support de bouteille sous le chassis a larriere du bus
+16. il manque la sangle sur le portillon ard
+17. il manque le plan dimplantation des fusibles
+18. dans le wagon 2 au  6em voussoirs il manque le plan dimplantation des fusibles
+19. apres larticulation cote gauche il manque lautocollant de lemplacement du plot de levage
+20. il manque le plombage sur les 3 caches inter aviation
+
+--- Cluster 9 (des reprendre portes fixation sur lhygiène vantaux réprendre câblages électriques) ---
+1. reprendre le cheminement des condensats de climatisation dans les voussoirs droit et gauche
+2. revoir lensemble des cheminements des condensats dans les voussoirs afin de leur donner une courbe descendante permanente pour evacuer
+3. position des colliers inaccessible pour la maintenance au niveau des pompes de relance arrière latérale droite
+4. écran des caméras de vidéosurveillance naffiche pas toutes les caméras et ne fais pas la rotation des vues
+5. aucunes des girouettes présente sur le véhicule ne fonctionnent
+6. non fonctionnement des 2 feux latéraux autour de lessieu 2 droit
+7. il faut reprendre la fixation des prises celleci sont pendante
+8. reprendre la fixation des cosses au niveau du soufflet en dessous du bus cote droit
+9. reprendre la fixation des tuyaux clim
+10. le sujet est en attente du ko des gaines de ventilation voir ratp dev
+11. interférence des câbles sur protection en fibre du poste machiniste
+12. rependre la fixaton des socles des barre de maintien wagon 1 et wagon 2
+13. le plan de désignation des fusibles est pas conforme
+14. il y a des rayures sur lalu du sieges double cote gauche avant larticulation
+15. il y a des interférences sur la durites de liquide de refroidissement sur le pack batterie avant
+16. la jante extérieur du 2em essieux coté gauche a des traces de peinture
+17. la trappe de chage arriere gauche presente des rayures
+18. le garde boue du 2em essieu cote droit présente des manques de peinture
+19. il faut reprendre la fixation et mettre plus de velcro pour maintenir les cornieres en haut des montants
+20. il faut reprendre la fixation et mettre plus de velcro pour maintenir les cornieres en haut des montants cote droit

@@ -1,0 +1,154 @@
+
+--- Cluster 0 (voiture lécran fixé écran version non support remorque usb dièdre) ---
+1. écran dièdre voiture et remorque ne fonctionne pas
+2. écran dièdre voiture et remorque ne fonctionne pas ils sallume et se coupent par intermittence sans afficher une image nette
+3. dièdre voiture et remorque ne fonctionnent pas
+4. camera derrière dièdre a refixer au plafond
+5. vis de fixation a reprendre au plafond devant la dièdre
+6. refermer les écran dièdre avant mise en exploitation
+7. dièdre ouverte et câble pendant
+8. écran dièdre ar non alimentée
+9. dièdre ne fonctionne pas
+10. défaut de fixation support écran dièdre à d bouge
+11. manque le support prise usb dièdre
+12. prise usb dièdre absent
+13. contrôle de la dièdre non effectué puisquil manque la clé usb deporte
+14. manque le support de prise usb dièdre
+15. lécran esclave du dièdre ne fonctionne pas
+16. manque carénage de lécran dièdre
+17. absence du support plus prise usb dièdre
+18. clé usb fonctionne pas sur dièdre
+19. réprendre la fixation de la prise usb et aussi de son support qui bouge
+20. repositionner prise usb
+
+--- Cluster 1 (trop réservoir dair interférence dhuile durite circuit liquide refroidissement niveau) ---
+1. position des colliers inaccessible pour la maintenance au niveau des pompes de relance arrière latérale droite
+2. tuyau fixe sur une tubulure de circuit de refroidissement
+3. pas de liquide de refroidissement au moment du test voyant orange allumé mis au niveau mini en vidant le réservoir tampon
+4. réservoir de liquide de refroidissement tampon vide
+5. reprendre la fixation des cosses au niveau du soufflet en dessous du bus cote droit
+6. le pare jambe cote gauche face au siege dans le wagon 2 au niveau de la porte 3 est rayé
+7. il faut reprendre les éléments de carrosserie rayé au niveau de lessieux 3
+8. il y a des interférences sur la durites de liquide de refroidissement sur le pack batterie avant
+9. trappe latéral moteur coté gauche une interférence entre la durite de liquide de refroidissement sur la motrice la pate est monté a lenvers
+10. le faisceau qui alimente le bouton douverture de la porte 1 est en interférence entre le bouchon et la sonde de niveau dhuile de direction assitée
+11. dans le compartiment moteur coté gauche la durite de liquide de refroidissement est en interférence avec le cable haute tension
+12. dans le compartiment moteur coté gauche le collier et la durite de liquide de refroidissement est en interférence avec la cable haute tension
+13. le niveau de liquide de direction est plus bas que le mini
+14. sur le pack batterie du wagon 2 cote droit la durite de liquide de refroidissement est trop coudé
+15. le cable haute tension est en interference sur la durite de liquide de refroidissement il a ete convenue sur les 4 autres bus de mettre un double collier
+16. il faut au niveau de la porte 3 et mettre un cordan de mastic supplementaire pour éviter toute infiltration
+17. il faut r au niveau de la porte 4 et mettre un cordan de mastic supplementaire pour éviter toute infiltration
+18. niveau en dessous maxi
+19. niveau au médium
+20. voyant orange niveau gaz bas essai sur route non réalisé plus un t en mode orange
+
+--- Cluster 2 (fonctionnement lors pivot vantaux voussoir fermeture interférence cos vantail porte) ---
+1. avant dernier voussoir avant porte 4 tecalans dair en interfèrence sur le châssis dans la descente après la girouette arrière
+2. self du 2eme vantail de la porte 4 ne fonctionne pas intérieur
+3. porte avant se met en défaut après quelques commandes ouverture fermeture
+4. présence dun point dur a louverture et a la fermeture du 1er vantail
+5. après avoir appuyé une première fois sur la demande de poussette le mode self de la porte 3 ne renferme plus la porte automatiquement
+6. éclairage de porte 4 en mode nuit ne fonctionne pas
+7. en fin de fermeture la porte est bruyante et force pour verrouiller sa position
+8. habillage détérioré devant le voussoir de porte avant droit
+9. self extérieur avant de la porte 3 ne fonctionne pas
+10. après avoir fait des déclenchement de sécurité la porte 3 ne fonctionne plus en mode automatique ce problème est régulier sur cette porte et se produit par intermittence
+11. écran de porte ne fonctionne pas au poste de conduite
+12. porte 1 le vantail avant ne se ferme pas
+13. inter 2eme vantail de self porte 2 ne fonctionne pas
+14. il y a une interférence avec les tuyaux dair qui touche le support du boitier electronique de porte
+15. interférence sur le cablage de la porte une fois celleci ouverte
+16. il est souhaitable quun balai soit monté sur lencombrement du voussoir de louverture de la porte 1
+17. la mousse qui canalise la ventilation sur le voussoir de la porte 2 est décollé
+18. les bras de portes touche sur la carrosserie en ouverture vantail av et ar
+19. il faut reprendre lecartement douverture de la porte 2 vantail 1 par rapport a la rampe ufr celleci souvre pas a la limite de la rampe ufr comme sur le vantail 2
+20. le bord sensible ne fonctionne plus arriver a mis course de la fermeture de la porte
+
+--- Cluster 3 (cache support plombage trappe signalétique bouchon boîtier protection vis manque) ---
+1. manque inter de réarmement des commandes de secours au poste de conduite
+2. manque une sangle de maintien sur la trappe girouette après louverture de la trappe celle ci viens en appuie sur la caméra
+3. manque adhésif droit et gauche
+4. manque caoutchouc de maintien de la trappe extincteur
+5. manque le cache vinyle sur lécran pour lanti reflet
+6. manque le plombage sur linter de déverrouillage durgence des freins
+7. manque les clés du lot de bord carré et clé conducteur
+8. manque la plaque de tare
+9. manque la lampe autonome présence dune lampe autre
+10. manque les clés du lots de bord
+11. manque les clés du conducteur
+12. manque plombage de linter de maintenance inhibition des freins
+13. manque lampe autonome
+14. manque les clés du lot de bord
+15. il manque la couverture de protection sur la génératrice electrique
+16. il manque du produit anticorrosion sur le support de bouteille sous le chassis a larriere du bus
+17. il manque la sangle sur le portillon ard
+18. il manque le plan dimplantation des fusibles
+19. dans le wagon 2 au  6em voussoirs il manque le plan dimplantation des fusibles
+20. apres larticulation cote gauche il manque lautocollant de lemplacement du plot de levage
+
+--- Cluster 4 (facilement conducteur route côté pmr lassise machiniste numéro assise siège) ---
+1. coulissement assise dur
+2. coulissent assise dur
+3. colonnette de siège arg bouge
+4. le premier bouton de siège massant nfp en position bas il reste bloqué sur le carter
+5. housse de siège mal fixée
+6. coulissement assise dur
+7. siège chauffant ne fonctionne pas
+8. sol meuble à droite siège moniteur
+9. commande siège chauffant moniteur ne fonctionne pas
+10. emmanchement meuble à droite de siège moniteur
+11. interférence accoudoir de siège moniteur sur main courante
+12. dispositif siège chauffant ne fonctionne pas
+13. reprendre fixation du siège 19
+14. vibration au niveau de léclairage voyageur au dessus du siège avant droit
+15. siège droit après porte 2
+16. reprendre joint de passage du tecalan de la caa a droie du siège conducteur
+17. retour de tapis de sol en dessous du 4eme siège droit plié et mal fixé
+18. 1 er siège avant droit inférieur
+19. reprendre peinture habillage au dessus des derniers siège arrière
+20. défaut de serrage du siège pmr gauche face à la route
+
+--- Cluster 5 (billetique backbone bougent vidéo câble serrage boîtier câbles switch m12) ---
+1. refixer câble m12 dans la trappe extincteur
+2. fixer câble m12 et éclairage 2 portes correctement
+3. reprendre position et fixation du câble m12 derrière lextincteur
+4. reprendre fixation du câble m12
+5. reprendre fixation des câbles dans le voussoir
+6. 1 reprendre le serrage des prises  fms et entrée tor bougent 2 reprendre le serrage des câbles m12 sur boîtier switch vidéo surveillance
+7. câble m12 bouge sur switch backbone temporisé
+8. reprendre le serrage du câble m12 sur le boîtier switch billetique
+9. reprendre le serrage bdes câbles m12 sur les boitiers switch backbone permanenttemporisé
+10. reprendre serrage des câbles m12 sur les switchs backbone
+11. reprendre serrage câble m12 sur switch vidéo surveillance
+12. câbles m12 non fixés
+13. câbles m12 desserrés
+14. reprendre le serrage du câble m12 sur boîtier switch vidéo
+15. reprendre le serrage du câble m12 sur boîtier switch billetique
+16. 1 reprendre le serrage des prises sur boîtier sesaly 2 câbles m12 desserrés
+17. câbles m12 bougent sur switch vidéo
+18. câblages m12 bougent sur boîtier switch billetique
+19. câblages m12 bouge énormément sur boîtier switch vidéo surveillance
+20. câblages m12 sur boîtier switch vidéo bougent
+
+--- Cluster 6 (mal dair arrière absence protection droit support trappe non interférence) ---
+1. test parentalite anomalies
+2. adhésif se décolle à cause de la surface granuleuse du support
+3. adhésif non complété avec lattestation daménagement
+4. pas de possibilité douvrir totalement la trappe girouette pas de sangle de maintien et la caméra empêche louverture totale de la trappe
+5. reprendre le cheminement des condensats de climatisation dans les voussoirs droit et gauche
+6. réservoirs dair en voussoirs droit et gauche non conforme à la réglementation les sangles de maintien ne doivent pas être de type ferraille mais avoir une protection
+7. boitier électronique dans le 1 er voussoir droit à refixer
+8. absence de la plaque de tare et du coc permettant de la remplir
+9. baie arrière cassée
+10. détection fixée sur une tubulende refroidissement par collier plastique a reprendre le faire detector ne doit pas être en contact direct avec une potentielle source de chaleur
+11. verrou de la trappe des accessoires au tableau de bord ne verrouille pas
+12. adhésifs se décolle à cause du support granuleux
+13. revoir lensemble des cheminements des condensats dans les voussoirs afin de leur donner une courbe descendante permanente pour evacuer
+14. tuyaux de climatisation vibrent dans le dernier voussoir gauche
+15. condensat de climatisation dans le 4eme voussoir gauche remonte et ne peux pas évacuer leau
+16. écrou de la serrure de la face avant à resserrer
+17. défaut daspect suite à fuite sur raccords du radiateur
+18. fermeture automatique en mode self ne fonctionne pas
+19. inter self extérieur ne fonctionne pas
+20. défaut de fixation de la poignée

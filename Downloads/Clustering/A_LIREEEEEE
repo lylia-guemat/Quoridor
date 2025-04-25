@@ -1,0 +1,2 @@
+Pour compiler fait $ source monenv/bin/activate 
+Ensuite python $ python3 ./main_pipeline.py

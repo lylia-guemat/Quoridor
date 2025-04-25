@@ -1,0 +1,132 @@
+
+--- Cluster 0 (roulage fin inhibition ocontrôle cos linhibition sans sécu lcontrôle htests) ---
+1. htests en fin de roulage
+2. lcontrôle de linhibition de cos
+3. ktests en fin de roulage
+4. ocontrôle inhibition des cos au roulage
+5. ocontrôle de linhibition des cos au roulage
+6. ocontrôle des portes et des da
+7. k tests en fin de roulage
+8. ltests en fin de roulage
+9. otfonction sans sécu inhibition du fipo
+10. oufonction sans sécu inhibition du fae
+11. droulage  contrôle inhibition des cos au roulage
+
+--- Cluster 1 (contrôle concordance photo ufr rrex conduite dexploitation alimentations latéral badge) ---
+1. 
+2. dintérieur  poste de conduite
+3. iextérieur
+4. pmcontrôle des alimentations
+5. qdivers
+6. rrex
+7. cintérieur  poste de conduite
+8. dintérieur  enceinte passagers
+9. fextérieur
+10. icompartiment moteur berceau mecanique
+11. kportes
+12. lappareils embarques
+13. maccessoires
+14. gextérieur
+15. kdessous châssis
+16. orex  suivant cahier de recettes_833121084_240912_v2
+17. fcontroles en toiture
+18. lblevier de fae
+19. jcompartiment moteur berceau mecanique
+20. lmrampe ufr
+
+--- Cluster 2 (iexterieur vérification epc equipements ereservoirs exterieure exterieures exterieurs face fae) ---
+1. iexterieur
+2. iexterieur
+
+--- Cluster 3 (reglementaires exterieurs interieures ginscriptions exterieures cinscriptions finscriptions binscriptions dinscriptions einscriptions) ---
+1. cinscriptions reglementaires interieures
+2. binscriptions reglementaires interieures
+3. einscriptions reglementaires exterieurs
+4. binscriptions reglementaires interieures  exterieurs
+5. finscriptions reglementaires exterieures
+6. ginscriptions reglementaires exterieurs
+7. finscriptions reglementaires exterieurs
+8. ginscriptions reglementaires exterieures
+9. cinscriptions reglementaires  interieures
+10. dinscriptions reglementaires exterieurs
+11. ainscriptions reglementaires interieures crossway
+12. ginscriptions reglementaires exterieures
+
+--- Cluster 4 (constructeur vehicule fournir adocuments version v015 gx137 el v021 v10) ---
+1. adocuments a fournir dans le vehicule par le constructeur v015
+2. adocuments a fournir dans le vehicule par le constructeur
+3. adocuments a fournir dans le vehicule par le constructeur version v0610
+4. adocuments a fournir dans le vehicule par le constructeur version v0611
+5. adocuments a fournir dans le vehicule par le constructeur version v0614
+6. adocuments a fournir dans le vehicule par le constructeur version v069
+7. adocuments a fournir dans le vehicule par le constructeur version v0613
+8. adocuments a fournir dans le vehicule par le constructeur version v01 gx137 el
+9. adocuments a fournir dans le vehicule par le constructeur version v015
+10. adocuments a fournir dans le vehicule par le constructeur version v013
+11. adocuments a fournir dans le vehicule par le constructeur version v014
+12. adocuments a fournir dans le vehicule par le constructeur version v011
+13. adocuments a fournir dans le vehicule par le constructeur version v012
+14. adocuments a fournir dans le vehicule par le constructeur version v0617
+15. adocuments a fournir dans le vehicule par le constructeur v0618
+16. adocuments a fournir dans le vehicule par le constructeur v06
+17. adocuments a fournir dans le vehicule par le constructeur v05
+18. adocuments a fournir dans le vehicule par le constructeur v021
+19. adocuments a fournir dans le vehicule par le constructeur version v016
+20. adocuments a fournir dans le vehicule par le constructeur version v020
+
+--- Cluster 5 (secours ouverture cos porte vantail ofcommande oecommande ogcommande qmcommande lecommande) ---
+1. lecommande ouverture de secours cos de porte 1
+2. lkcommande ouverture de secours cos de porte 3
+3. ofcommande ouverture de secours cos de porte 1 vantail 1
+4. ogcommande ouverture de secours cos de porte 1 vantail 2
+5. ojcommande ouverture de secours cos de porte 2
+6. omcommande ouverture de secours cos de porte 3
+7. oecommande ouverture de secours cos de porte 1
+8. oecommande ouverture de secours cos de porte 1 vantail
+9. ogcommande ouverture de secours cos de porte 1 vantail ar
+10. ofcommande ouverture de secours cos de porte 1 vantail av
+11. ofcommande ouverture de secours de porte 1 vantail 1
+12. qjcommande ouverture de secours cos de porte 2
+13. qfcommande ouverture de secours cos de porte 1 vantail 1
+14. qgcommande ouverture de secours cos de porte 1 vantail 2
+15. qmcommande ouverture de secours cos de porte 3
+16. opcommande ouverture de secours cos de porte 4
+17. ejcommande ouverture de secours cos de la porte 2 vantail 1  2
+18. epexterieur  commande ouverture de secours cos
+19. efcommande ouverture de secours cos de la porte 1 vantail 1  2
+20. njcommande ouverture de secours cos de porte 2
+
+--- Cluster 6 (porte vantail olsécurités oisécurités odsécurités oesécurités oosécurités ljsécurités qccontrôle qhcontrôle) ---
+1. ldsécurités de porte 1
+2. lccontrôle de la porte 1
+3. e1contrôle de la porte 1
+4. occontrôle de la porte 1
+5. licontrôle de la porte 3
+6. lfcontrôle de la porte 2
+7. ljsécurités de porte 3
+8. olsécurités de porte 3
+9. ohcontrôle de la porte 2
+10. okcontrôle de la porte 3
+11. oesécurités de porte 1 vantail 2
+12. oisécurités de porte 2
+13. odsécurités de porte 1 vantail 1
+14. ofcontrôle de la porte 2
+15. ogsécurités de porte 2
+16. oisécurités de porte 2
+17. olsécurités de porte 3
+18. odsécurités de porte 1 vantail 1
+19. qlsécurités de porte 3
+20. qccontrôle de la porte 1
+
+--- Cluster 7 (satellite droit photo concordance psd d35pupitre d27pupitre contrôle d13pupitre dbpupitre) ---
+1. d22pupitre satellite gauchecontrôle de concordance avec une photo
+2. d10pupitre satellite droitcontrôle de concordance avec une photo
+3. d31pupitre satellite gauche contrôle de concordance avec une photo
+4. d19pupitre satellite droit contrôle de concordance avec une photo
+5. dapupitre satellite droit psd
+6. dbpupitre satellite gauche psg
+7. d13pupitre satellite droit
+8. d27pupitre satellite gauche
+9. c17pupitre satellite droit psd
+10. eevoussoirs droit remorque
+11. d35pupitre satellite gauche

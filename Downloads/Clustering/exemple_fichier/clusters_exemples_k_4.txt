@@ -1,0 +1,88 @@
+
+--- Cluster 0 (sur interférence porte tecalan les manque tuyau dair durite présence) ---
+1. manque une sangle de maintien sur la trappe girouette après louverture de la trappe celle ci viens en appuie sur la caméra
+2. avant dernier voussoir avant porte 4 tecalans dair en interfèrence sur le châssis dans la descente après la girouette arrière
+3. défaut daspect suite à fuite sur raccords du radiateur
+4. rayure sur carrosserie arg
+5. manque le plombage sur linter de déverrouillage durgence des freins
+6. tube de la détection dincendie fixé avec un collier sur la tubulure de circuit de refroidissement à écarter de la source de chaleur pouvant créer un déclenchement
+7. absence dun cache sur la borne de la batterie
+8. tuyau fixe sur une tubulure de circuit de refroidissement
+9. poste machiniste cote gauche sur les interrupteur rouge avec cache aviation de sans secu et inibition fae merci de mettre un plombage sur chaque cache pour eviter que le machiniste puisse actionner les intérrupteur par inadvertance
+10. il y a une interférence avec les tuyaux dair qui touche le support du boitier electronique de porte
+11. interférence sur le cablage de la porte une fois celleci ouverte
+12. la mousse qui canalise la ventilation sur le voussoir de la porte 2 est décollé
+13. les bras de portes touche sur la carrosserie en ouverture vantail av et ar
+14. il manque la couverture de protection sur la génératrice electrique
+15. reprendre le passage du tuyau dair qui alimente letrier de frein avd celui est en interférence sur le bras de suspension
+16. reprendre le passage du tuyau dair qui alimente letrier de frein avg celui est en interférence sur le bras de suspension
+17. la plaque de tare est sur le cote gauche du bus celleci doit ce trouver sur le coté droit apres la porte 1
+18. interférence tuyau extincteur et tuyau transparent
+19. il manque la sangle sur le portillon ard
+20. interférence des câbles sur protection en fibre du poste machiniste
+
+--- Cluster 1 (reprendre des serrage fixation sur câbles porte réglage maintient switch) ---
+1. reprendre le cheminement des condensats de climatisation dans les voussoirs droit et gauche
+2. il faut reprendre la fixation du pivot du portillon celuici a un jeu important
+3. sur larriere droit une bose et quelque trace a reprendre
+4. il faut reprendre la protection du cablage de la valve de nivelement cote gauche essieux 2
+5. il faut reprendre la fixation des prises celleci sont pendante
+6. reprendre la fixation des cosses au niveau du soufflet en dessous du bus cote droit
+7. reprendre la fixation des tuyaux clim
+8. il faut reprendre les éléments de carrosserie rayé au niveau de lessieux 3
+9. reprendre les rayures sur la trappe de charge
+10. il faut reprendre la fixation du faisceaux du boitier sous chassis
+11. il faut reprendre la fixation et mettre plus de velcro pour maintenir les cornieres en haut des montants
+12. il faut reprendre la fixation et mettre plus de velcro pour maintenir les cornieres en haut des montants cote droit
+13. il faut reprendre la fixation et mettre plus de velcro pour maintenir les cornieres en haut des montants et réajuster celleci
+14. il faut reprendre le réglage des ferrure pour la fermeture de louvrant inférieur a lavant
+15. reprendre la fixation du boîtier tachygraphe celui ci bouge
+16. reprendre lhygiène du câble de puissance de lalternateur
+17. reprendre hygiène tablette côté droit
+18. reprendre passage câble rouge
+19. reprendre positionnement gaine de protection du retro gauche sur les cablages
+20. reprendre peinture en pied de cabine machiniste
+
+--- Cluster 2 (pas fonctionne tient porte sur les correctement trappe nest volet) ---
+1. pas de possibilité douvrir totalement la trappe girouette pas de sangle de maintien et la caméra empêche louverture totale de la trappe
+2. verrou de la trappe des accessoires au tableau de bord ne verrouille pas
+3. fermeture automatique en mode self ne fonctionne pas
+4. inter self extérieur ne fonctionne pas
+5. self du 2eme vantail de la porte 4 ne fonctionne pas intérieur
+6. écran dièdre voiture et remorque ne fonctionne pas
+7. demande darret poussette extérieur ne fonctionne pas hors mode self
+8. écran arrière de la remorque fonctionne mal par intermittence
+9. éclairage de porte 4 en mode nuit ne fonctionne pas
+10. écran voiture et remorque ne fonctionnent pas
+11. autobus ne démarre pas pas de carburant
+12. écran des caméras de vidéosurveillance naffiche pas toutes les caméras et ne fais pas la rotation des vues
+13. caméra ne fonctionne pas par intermittence affichage en bleu à la place de limage
+14. self extérieur avant de la porte 3 ne fonctionne pas
+15. verrou droit de la trappe girouette ne verrouille pas
+16. écran dièdre voiture et remorque ne fonctionne pas ils sallume et se coupent par intermittence sans afficher une image nette
+17. caméras de portes arrières ne fonctionne pas au poste de conduite
+18. écrans ne fonctionne pas en voiture et remorque
+19. pas de retour de langle mort arrière droit sur lécran au poste de conduite
+20. écran des portes naffiche pas les portes arrières lorsque elles sont ouvertes
+
+--- Cluster 3 (porte manque des dans les gauche siège niveau fixation mal) ---
+1. 
+2. 
+3. jgoohfiyfiyfu
+4. aaaaaaa
+5. test 4
+6. test parentalite anomalies
+7. test3
+8. test2
+9. test_old
+10. test 0504
+11. adhésif se décolle à cause de la surface granuleuse du support
+12. adhésif non complété avec lattestation daménagement
+13. réservoirs dair en voussoirs droit et gauche non conforme à la réglementation les sangles de maintien ne doivent pas être de type ferraille mais avoir une protection
+14. boitier électronique dans le 1 er voussoir droit à refixer
+15. absence de la plaque de tare et du coc permettant de la remplir
+16. baie arrière cassée
+17. détection fixée sur une tubulende refroidissement par collier plastique a reprendre le faire detector ne doit pas être en contact direct avec une potentielle source de chaleur
+18. manque inter de réarmement des commandes de secours au poste de conduite
+19. adhésifs se décolle à cause du support granuleux
+20. revoir lensemble des cheminements des condensats dans les voussoirs afin de leur donner une courbe descendante permanente pour evacuer
