@@ -22,7 +22,7 @@ class GameState(BaseModel):
     game_over: bool = False
     winner_id: Optional[int] = None
 
-class Move(BaseModel):
+class Move(BaseModel): # On renomme la classe Move par Coup ? comme un coup peut être un move ou un wall
     move_type: str  # "move" ou "wall"
     new_position: Optional[Position] = None  # Pour un déplacement de pion
     wall: Optional[Wall] = None              # Pour la pose d'un mur

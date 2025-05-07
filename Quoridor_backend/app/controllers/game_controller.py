@@ -1,11 +1,23 @@
 import asyncio
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from app.schemas import game_schema
 from app.services.quoridor_service import game_service
 from app.utils.connection_manager import manager
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates 
 
 
 router = APIRouter()
+
+templates = Jinja2Templates(directory="Quoridor_front/templates")
+
+@router.get("/play", response_class=HTMLResponse)
+async def play(request: Request):
+    return templates.TemplateResponse("play.html", {"request": request})
+
+@router.get("/rules", response_class=HTMLResponse)
+async def rules(request: Request):
+    return templates.TemplateResponse("rules.html", {"request": request})
 
 
 @router.get("/game", response_model=game_schema.GameState)

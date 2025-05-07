@@ -1,40 +1,44 @@
-
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Quoridor - Game</title>
+    <title>Quoridor - 4 Joueurs</title>
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
     <div class="container">
         <div class="left-section">
-            <h1>Quoridor</h1>
+            <h1>Quoridor - 4 Joueurs</h1>
             <div class="game-container">
+                <!-- Joueur 2 (haut) -->
                 <div class="player player-2 top-player">
                     <h3>Joueur 2</h3>
                     <div class="walls-count">Murs: <span id="player2-walls">5</span></div>
                 </div>
-                
+
                 <div class="middle-section">
+                    <!-- Joueur 3 (gauche) -->
                     <div class="player player-3 left-player">
                         <h3>Joueur 3</h3>
                         <div class="walls-count">Murs: <span id="player3-walls">5</span></div>
                     </div>
-                    
+
+                    <!-- Plateau de jeu -->
                     <div class="game-board" id="game-board"></div>
-                    
+
+                    <!-- Joueur 4 (droite) -->
                     <div class="player player-4 right-player">
                         <h3>Joueur 4</h3>
                         <div class="walls-count">Murs: <span id="player4-walls">5</span></div>
                     </div>
                 </div>
-                
+
+                <!-- Joueur 1 (bas) -->
                 <div class="player player-1 bottom-player">
                     <h3>Joueur 1</h3>
                     <div class="walls-count">Murs: <span id="player1-walls">5</span></div>
                 </div>
             </div>
-            
+
             <div class="current-turn">
                 Tour: <span id="current-player">Joueur 1</span>
             </div>
