@@ -1,0 +1,54 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quoridor - Game</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="left-section">
+            <h1>Quoridor</h1>
+            <div class="game-container">
+                <div class="player player-2 top-player">
+                    <h3>Joueur 2</h3>
+                    <div class="walls-count">Murs: <span id="player2-walls">5</span></div>
+                </div>
+                
+                <div class="middle-section">
+                    <div class="player player-3 left-player">
+                        <h3>Joueur 3</h3>
+                        <div class="walls-count">Murs: <span id="player3-walls">5</span></div>
+                    </div>
+                    
+                    <div class="game-board" id="game-board"></div>
+                    
+                    <div class="player player-4 right-player">
+                        <h3>Joueur 4</h3>
+                        <div class="walls-count">Murs: <span id="player4-walls">5</span></div>
+                    </div>
+                </div>
+                
+                <div class="player player-1 bottom-player">
+                    <h3>Joueur 1</h3>
+                    <div class="walls-count">Murs: <span id="player1-walls">5</span></div>
+                </div>
+            </div>
+            
+            <div class="current-turn">
+                Tour: <span id="current-player">Joueur 1</span>
+            </div>
+            <div class="game-status" id="game-status"></div>
+        </div>
+
+        <div class="right-section">
+            <div class="controls">
+                <button id="restart-btn" class="welcome-btn">Nouvelle partie</button>
+                <button id="rules-btn" class="welcome-btn">Règles</button>
+                <button id="stop-btn" class="welcome-btn">Arrêter</button>
+            </div>
+        </div>
+    </div>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
