@@ -1,15 +1,15 @@
 # run_ais_timed.py
 
 import time
-from app.models.game import QuoridorGame, play_ai_turn
-from app.schemas.game_schema import Position, Wall, GameState, Player
+from Quoridor_backend.app.models.game import QuoridorGame, play_ai_turn
+from Quoridor_backend.app.schemas.game_schema import Position, Wall, GameState, Player
 
 import inspect
 
 
 def simulate_with_timing_and_display(
     difficulty_p1="a_star",
-    difficulty_p2="min_max",
+    difficulty_p2="minmax",
     nb_games=10,
     max_turns=200
 ):
@@ -97,9 +97,9 @@ def simulate_with_timing_and_display(
 if __name__ == "__main__":
     # Paramètres personnalisables
     lvl1 = "a_star"
-    lvl2 = "min_max"
+    lvl2 = "minmax"
     games = 5
-
+    
     print(f"Simulation de {games} parties — P1={lvl1} vs P2={lvl2}")
     simulate_with_timing_and_display(
         difficulty_p1=lvl1,
