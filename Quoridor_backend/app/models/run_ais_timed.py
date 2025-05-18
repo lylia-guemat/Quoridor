@@ -1,16 +1,32 @@
 # run_ais_timed.py
 
 import time
-from Quoridor_backend.app.models.game import QuoridorGame, play_ai_turn
+from Quoridor_backend.app.models.game import QuoridorGame
 from Quoridor_backend.app.schemas.game_schema import Position, Wall, GameState, Player
 
-import inspect
+
+def play_ai_turn(game, player_id, difficulty="easy"):
+    """
+    Joue un coup pour un joueur donné selon la difficulté spécifiée.
+    """
+    def play_ai_turn(game, player_id, difficulty="easy"):
+        if game.game_over:
+            return  # Stoppe tout si la partie est finie
+
+    assert game.current_turn == player_id, f"C'est au joueur {game.current_turn} de jouer, pas {player_id}"
+
+    if difficulty == "a_star":
+        game.ai_move_a_star(game.get_game_state()) 
+    elif difficulty == "minmax":
+        game.ia_move_minmax_ab(depth=2) 
+    else:
+        raise ValueError("Niveau inconnu : 'a_star' ou 'minmax'")
 
 
 def simulate_with_timing_and_display(
     difficulty_p1="a_star",
     difficulty_p2="minmax",
-    nb_games=10,
+    nb_games=1,
     max_turns=200
 ):
     """
@@ -29,16 +45,10 @@ def simulate_with_timing_and_display(
 
     for game_idx in range(1, nb_games + 1):
         game = QuoridorGame()
-
-    
         start_game = time.perf_counter()
         turn_count = 0
 
-
-
-
         print(f"\n=== Début de la partie {game_idx}/{nb_games} ===")
-       
         game.print_board()  # état initial
 
         while not game.game_over and turn_count < max_turns:
@@ -48,15 +58,19 @@ def simulate_with_timing_and_display(
             t0 = time.perf_counter()
             play_ai_turn(
                 game,
+                curr_id,
                 difficulty=(difficulty_p1 if curr_id == 1 else difficulty_p2)
             )
+            if game.game_over:
+                break
+
             dt = time.perf_counter() - t0
 
             ia_times[curr_id] += dt
             ia_moves[curr_id] += 1
             turn_count += 1
 
-            print(f"\nTour {turn_count} – Joueur {curr_id} a joué (temps : {dt:.4f}s)")
+            print(f"\nTour {turn_count} – Joueur {curr_id} a joué (temps : {dt:.4f}s)")
             game.print_board()
 
         # Fin de partie
@@ -70,7 +84,7 @@ def simulate_with_timing_and_display(
         else:
             draws += 1
 
-        print(f"\n>>> Fin partie {game_idx} en {duration:.3f}s, tours : {turn_count}, gagnant : {winner or 'Aucun'}")
+        print(f"\n>>> Fin partie {game_idx} en {duration:.3f}s, tours : {turn_count}, gagnant : {winner or 'Aucun'}")
 
     # Bilan global
     avg_game = sum(total_durations) / len(total_durations)
@@ -81,17 +95,14 @@ def simulate_with_timing_and_display(
     for pid in (1, 2):
         avg_move = ia_times[pid] / ia_moves[pid] if ia_moves[pid] else 0.0
         lvl = difficulty_p1 if pid == 1 else difficulty_p2
-        print(f"IA {pid} ({lvl}) – Coups joués : {ia_moves[pid]}, "
-              f"temps total : {ia_times[pid]:.3f}s, "
-              f"moyenne : {avg_move:.4f}s/coup")
+        print(f"IA {pid} ({lvl}) – Coups joués : {ia_moves[pid]}, "
+              f"temps total : {ia_times[pid]:.3f}s, "
+              f"moyenne : {avg_move:.4f}s/coup")
 
     print(f"\nAprès {nb_games} parties :")
-    print(f"IA 1 ({difficulty_p1}) : {wins_p1} victoires "
-          f"({wins_p1/nb_games*100:.1f}%)")
-    print(f"IA 2 ({difficulty_p2}) : {wins_p2} victoires "
-          f"({wins_p2/nb_games*100:.1f}%)")
-    print(f"Matchs nuls : {draws} "
-          f"({draws/nb_games*100:.1f}%)")
+    print(f"IA 1 ({difficulty_p1}) : {wins_p1} victoires ({wins_p1/nb_games*100:.1f}%)")
+    print(f"IA 2 ({difficulty_p2}) : {wins_p2} victoires ({wins_p2/nb_games*100:.1f}%)")
+    print(f"Matchs nuls : {draws} ({draws/nb_games*100:.1f}%)")
 
 
 if __name__ == "__main__":
