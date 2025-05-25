@@ -65,14 +65,6 @@ def restart_game(mode: str = Query("2players", description="Mode de jeu")):
 
 
 @router.post("/ai_move", response_model=game_schema.GameState)
-def ai_move():
-    try:
-        game_service.ai_move()
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-    return game_service.get_game_state()
-
-@router.post("/ai_move", response_model=game_schema.GameState)
 def ai_move(difficulty: str = Query("easy", regex="^(easy|medium|hard)$")):
     try:
         game_service.ai_move(difficulty=difficulty)
