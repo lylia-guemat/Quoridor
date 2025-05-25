@@ -1,8 +1,8 @@
 # run_ais_timed.py
 
 import time
-from Quoridor_backend.app.models.game import QuoridorGame
-from Quoridor_backend.app.schemas.game_schema import Position, Wall, GameState, Player
+from app.models.game import QuoridorGame
+from app.schemas.game_schema import Position, Wall, GameState, Player
 
 
 def play_ai_turn(game, player_id, difficulty="easy"):

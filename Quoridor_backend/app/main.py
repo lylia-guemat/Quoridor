@@ -2,7 +2,7 @@ import sys
 import pathlib
 import logging
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Query
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
@@ -61,6 +61,21 @@ async def read_play(request: Request):
 async def read_ai_difficulty(request: Request):
     return templates.TemplateResponse("ai-difficulty.html", {"request": request})
 
+@app.get("/game/ai", response_class=HTMLResponse)
+async def read_game_ai(request: Request,
+                       difficulty: str = Query(..., regex="^(easy|medium|hard)$")):
+    """
+    Lance une partie Humain vs IA (2 joueurs) au niveau de difficulté choisi.
+    """
+    return templates.TemplateResponse(
+        "game_2players.html",
+        {
+            "request": request,
+            "isVsAI": True,
+            "aiDifficulty": difficulty,
+            "mode": "2players"
+        }
+    )
 
 @app.get("/game/{mode}", response_class=HTMLResponse)
 async def read_game(request: Request, mode: str):
@@ -68,8 +83,11 @@ async def read_game(request: Request, mode: str):
         return templates.TemplateResponse("game_2players.html", {"request": request})
     elif mode == "4players":
         return templates.TemplateResponse("game_4players.html", {"request": request})
+    elif mode == "ai":
+        return templates.TemplateResponse("ai-difficulty.html", {"request": request})
     else:
         return templates.TemplateResponse("404.html", {"request": request})  # ou une redirection
+    
 
 @app.get("/rules", response_class=HTMLResponse)
 async def read_rules(request: Request):

@@ -1,5 +1,5 @@
 import asyncio
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request, Query
 from app.schemas import game_schema
 from app.services.quoridor_service import game_service
 from app.utils.connection_manager import manager
@@ -22,7 +22,9 @@ async def rules(request: Request):
 
 @router.get("/game", response_model=game_schema.GameState)
 def get_game_state():
+    # Retourne simplement l'état courant, sans toucher à game_service.game
     return game_service.get_game_state()
+
 
 
 @router.post("/move", response_model=game_schema.GameState)
@@ -51,6 +53,16 @@ async def make_move(move: game_schema.Move, player_id: int):
 
     return game_service.get_game_state()
 
+@router.post("/restart", response_model=game_schema.GameState)
+def restart_game(mode: str = Query("2players", description="Mode de jeu")):
+    if mode == "4players":
+        game_service.restart(num_players=4, walls_per_player=5)
+    elif mode in ("2players", "ai"):
+        game_service.restart(num_players=2, walls_per_player=10)
+    else:
+        raise HTTPException(status_code=400, detail="Mode de jeu invalide")
+    return game_service.get_game_state()
+
 
 @router.post("/ai_move", response_model=game_schema.GameState)
 def ai_move():
@@ -59,3 +71,14 @@ def ai_move():
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     return game_service.get_game_state()
+
+@router.post("/ai_move", response_model=game_schema.GameState)
+def ai_move(difficulty: str = Query("easy", regex="^(easy|medium|hard)$")):
+    try:
+        game_service.ai_move(difficulty=difficulty)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    return game_service.get_game_state()
+
+
+

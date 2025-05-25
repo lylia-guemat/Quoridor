@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Règles du jeu Quoridor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f8f8f8;
+      color: #333;
+      margin: 0;
+      padding: 2rem;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: #444;
+    }
+
+    ul {
+      padding-left: 1.5rem;
+    }
+
+    li {
+      margin-bottom: 1rem;
+    }
+
+    .note {
+      font-style: italic;
+      margin-top: 2rem;
+      background: #e0f7fa;
+      padding: 1rem;
+      border-left: 4px solid #00acc1;
+      border-radius: 5px;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 1rem;
+      }
+
+      .container {
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Règles du jeu Quoridor</h1>
+    <p><strong>Objectif :</strong> atteindre en premier la ligne opposée de départ avec son pion.</p>
+    <ul>
+      <li>Chaque joueur commence sur le centre de sa ligne de départ (haut ou bas du plateau).</li>
+      <li>À chaque tour, un joueur peut soit :
+        <ul>
+          <li>déplacer son pion d’une case (haut, bas, gauche, droite),</li>
+          <li>ou poser un mur (horizontal ou vertical) pour ralentir l’adversaire.</li>
+        </ul>
+      </li>
+      <li>On ne peut pas sauter par-dessus un mur.</li>
+      <li>Si deux pions sont côte à côte, on peut sauter par-dessus si la case derrière est libre.</li>
+      <li>Un mur ne peut jamais bloquer totalement un joueur : un chemin vers sa ligne d’arrivée doit toujours exister.
+      </li>
+      <li>Chaque joueur possède un nombre limité de murs (10 chacun à 2 joueurs, 5 chacun à 4 joueurs).</li>
+    </ul>
+
+    <div class="note">
+      🧠 <strong>Astuce :</strong> Utilisez vos murs stratégiquement pour ralentir l'adversaire, mais gardez toujours un
+      œil sur votre propre progression.
+    </div>
+  </div>
+</body>
+
+</html>

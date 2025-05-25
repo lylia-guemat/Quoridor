@@ -1,7 +1,9 @@
 import random
 import logging
 from collections import deque
-from Quoridor_backend.app.schemas.game_schema import Position, Wall, GameState, Player
+# from Quoridor_backend.app.schemas.game_schema import Position, Wall, GameState, Player
+from app.schemas.game_schema import Position, Wall, GameState, Player
+
 import heapq  # Import the heapq module
 from typing import List,Tuple,Optional
 logger = logging.getLogger("quoridor")
@@ -14,33 +16,38 @@ import copy
 class QuoridorGame:
     print("===> game.py correctement chargé")
 
-    def __init__(self, num_players: int = 2):
-
+    def __init__(self, num_players: int = 2, walls_per_player: int = None):
+        """
+        Initialise le plateau et les joueurs.
+        :param num_players: 2 ou 4
+        :param walls_per_player: nombre de murs par joueur (si None, utilise la valeur par défaut selon num_players)
+        """
         self.board = [["" for _ in range(9)] for _ in range(9)]
-        self.walls = []
+        self.walls: List = []
         self.num_players = num_players
-        self.game_over = False  # Indicateur de fin de partie
-        self.winner_id = None  # Identifiant du gagnant (None tant que la partie continue)
+        self.game_over = False
+        self.winner_id = None
 
+        # Détermine le nombre de murs par joueur
+        if walls_per_player is None:
+            walls_per_player = 10 if num_players == 2 else 5
+
+        # Initialisation des joueurs selon le nombre
         if num_players == 2:
-            # Positions standard pour 2 joueurs
             self.players = [
-                Player(id=1, pawn=Position(x=4, y=0), remaining_walls=10),
-                Player(id=2, pawn=Position(x=4, y=8), remaining_walls=10)
+                Player(id=1, pawn=Position(x=4, y=0), remaining_walls=walls_per_player),
+                Player(id=2, pawn=Position(x=4, y=8), remaining_walls=walls_per_player)
             ]
         elif num_players == 4:
-            # Pour 4 joueurs, chaque joueur commence au centre d'un côté du plateau.
             self.players = [
-                Player(id=1, pawn=Position(x=4, y=0), remaining_walls=5),
-                Player(id=2, pawn=Position(x=4, y=8), remaining_walls=5),
-                Player(id=3, pawn=Position(x=0, y=4), remaining_walls=5),
-                Player(id=4, pawn=Position(x=8, y=4), remaining_walls=5)
+                Player(id=1, pawn=Position(x=4, y=0), remaining_walls=walls_per_player),
+                Player(id=2, pawn=Position(x=4, y=8), remaining_walls=walls_per_player),
+                Player(id=3, pawn=Position(x=0, y=4), remaining_walls=walls_per_player),
+                Player(id=4, pawn=Position(x=8, y=4), remaining_walls=walls_per_player)
             ]
         else:
-            raise Exception(
-                "Le nombre de joueurs supporté est 2 ou 4 uniquement.")
+            raise ValueError("Le nombre de joueurs supporté est 2 ou 4 uniquement.")
 
-        #le premier tour est celui du joueur 1 (choix perso)
         self.current_turn = 1
 
     def get_game_state(self) :
@@ -208,8 +215,43 @@ class QuoridorGame:
             if player.id == 4 and player.pawn.x == 0:
                 return True
         return False
+    
+    def is_valid_wall_new(self, wall: Wall, walls: Optional[List[Wall]] = None) -> bool:
+        walls = walls if walls is not None else self.walls
 
-    def is_valid_wall(self, wall: Wall, walls: Optional[List[Wall]] = None) -> bool:
+        if wall.orientation not in ["horizontal", "vertical"]:
+            return False
+
+        # Le mur de référence doit être dans les bornes de la grille 9x9
+        if not (0 <= wall.position.x < 8 and 0 <= wall.position.y < 8):
+            return False
+
+        # Empêche les murs qui sortiraient de la grille
+        if wall.orientation == "horizontal" and wall.position.x >= 8 - 1:
+            return False
+        if wall.orientation == "vertical" and wall.position.y >= 8 - 1:
+            return False
+
+        # Vérifier superposition exacte
+        for w in walls:
+            if wall.position == w.position and wall.orientation == w.orientation:
+                return False
+
+        # Vérifier croisement interdit (croix)
+        for w in walls:
+            if wall.orientation == "horizontal" and w.orientation == "vertical":
+                if (w.position.x == wall.position.x or w.position.x == wall.position.x + 1) and \
+                (w.position.y == wall.position.y or w.position.y == wall.position.y + 1):
+                    return False
+            if wall.orientation == "vertical" and w.orientation == "horizontal":
+                if (w.position.y == wall.position.y or w.position.y == wall.position.y + 1) and \
+                (w.position.x == wall.position.x or w.position.x == wall.position.x + 1):
+                    return False
+
+        return True
+
+
+    def is_valid_wall_old(self, wall: Wall, walls: Optional[List[Wall]] = None) -> bool:
         # Utiliser self.walls par défaut si aucun mur simulé n’est passé
         walls = walls if walls is not None else self.walls
 
@@ -236,14 +278,16 @@ class QuoridorGame:
                     # (x,y)<->(x,y+1) et (x+1,y)<->(x+1,y+1)
                     # Deux murs horizontaux sur la même ligne se chevauchent
                     # si la distance entre leurs positions x est <= 1.
-                    if w.position.y == wall.position.y and abs(w.position.x - wall.position.x) <= 1:
+                    # if w.position.y == wall.position.y and abs(w.position.x - wall.position.x) <= 1:
+                    if w.position.y == wall.position.y and w.position.x == wall.position.x:
                         return False
                 elif wall.orientation == "vertical":
                     # Un mur vertical placé à (x, y) bloque les passages entre
                     # (x,y)<->(x+1,y) et (x,y+1)<->(x+1,y+1)
                     # Deux murs verticaux sur la même colonne se chevauchent
                     # si la distance entre leurs positions y est <= 1.
-                    if w.position.x == wall.position.x and abs(w.position.y - wall.position.y) <= 1:
+                    # if w.position.x == wall.position.x and abs(w.position.y - wall.position.y) <= 1:
+                    if w.position.x == wall.position.x and w.position.y == wall.position.y:
                         return False
             else:
                 # ajouter une vérification pour empêcher l'intersection
@@ -251,20 +295,70 @@ class QuoridorGame:
                 # de manière à couvrir le même segment. les murs ne doivent pas
                 # se chevaucher, même en travers.
                 if wall.orientation == "horizontal" and w.orientation == "vertical":
-                    # Un mur horizontal occupe [wall.position.x, wall.position.x+1] sur la ligne wall.position.y
-                    # Un mur vertical occupe [w.position.y, w.position.y+1] sur la colonne w.position.x
-                    # On interdit l'intersection si :
-                    #   w.position.x est dans [wall.position.x, wall.position.x+1]
-                    #   et wall.position.y est dans [w.position.y, w.position.y+1]
-                    if wall.position.x <= w.position.x <= wall.position.x + 1 and \
-                    w.position.y <= wall.position.y <= w.position.y + 1:
+                    # Cas 1
+                    if wall.position.x == w.position.x and wall.position.y == w.position.y:
+                        return False
+                    # Cas 2 (attention à ne pas sortir de la grille)
+                    if wall.position.x + 1 == w.position.x and wall.position.y - 1 == w.position.y and wall.position.y - 1 >= 0:
                         return False
                 elif wall.orientation == "vertical" and w.orientation == "horizontal":
-                    # Inverse de ce qui précède
-                    if w.position.x <= wall.position.x <= w.position.x + 1 and \
-                    wall.position.y <= w.position.y <= wall.position.y + 1:
+                    # Cas 3
+                    if wall.position.x == w.position.x and wall.position.y == w.position.y:
+                        return False
+                    # Cas 4 (attention à ne pas sortir de la grille)
+                    if wall.position.x - 1 == w.position.x and wall.position.y + 1 == w.position.y and wall.position.x - 1 >= 0:
                         return False
 
+        return True
+
+   
+  
+    def is_valid_wall(self, wall: Wall, walls: Optional[List[Wall]] = None) -> bool:
+        walls = walls if walls is not None else self.walls
+        # print(f"[DEBUG] Testing wall at {wall.position.x},{wall.position.y} orientation={wall.orientation} against {len(walls)} existing walls")
+
+        if wall.orientation not in ["horizontal", "vertical"]:
+            #print(f"[DEBUG] Invalid orientation: {wall.orientation}")
+            return False
+
+        # Bornes de la grille (0 <= x,y < 8)
+        if not (0 <= wall.position.x < 8 and 0 <= wall.position.y < 8):
+            #print(f"[DEBUG] Out of bounds: x={wall.position.x}, y={wall.position.y}")
+            return False
+
+        # Les checks de sortie de grille pour orientation ne sont plus nécessaires
+
+        for w in walls:
+            # --- Cas 1 : même orientation => chevauchement interdit
+            if w.orientation == wall.orientation:
+                if wall.orientation == "horizontal":
+                    # Empêche tout chevauchement ou contiguïté horizontale
+                    if w.position.y == wall.position.y and abs(w.position.x - wall.position.x) <= 1:
+                        #print(f"[DEBUG] Overlap horizontal with existing at x={w.position.x}, y={w.position.y}")
+                        return False
+                elif wall.orientation == "vertical":
+                    if w.position.x == wall.position.x and abs(w.position.y - wall.position.y) <= 1:
+                        #print(f"[DEBUG] Overlap vertical with existing at x={w.position.x}, y={w.position.y}")
+                        return False
+
+            # --- Cas 2 : orientations différentes => croisement interdit
+            else:
+                # Croisement interdit: murs se croisent en T
+                # Horizontal vs Vertical
+                if wall.orientation == "horizontal" and w.orientation == "vertical":
+                    # Interdiction si vertical commence dans l’intervalle du horizontal
+                    if (wall.position.x <= w.position.x <= wall.position.x + 1 and
+                        w.position.y == wall.position.y):
+                        #print(f"[DEBUG] Crossing detected at {wall.position.x},{wall.position.y} with vertical {w.position.x},{w.position.y}")
+                        return False
+
+                elif wall.orientation == "vertical" and w.orientation == "horizontal":
+                    if (wall.position.x == w.position.x and
+                        wall.position.y <= w.position.y <= wall.position.y + 1):
+                        #print(f"[DEBUG] Crossing detected at {wall.position.x},{wall.position.y} with horizontal {w.position.x},{w.position.y}")
+                        return False
+
+        #print(f"[DEBUG] Wall valid at {wall.position.x},{wall.position.y}")
         return True
 
 
@@ -380,6 +474,33 @@ class QuoridorGame:
     def switch_turn(self):
         self.current_turn = (self.current_turn % self.num_players) + 1
 
+
+    def ai_move(self, difficulty: str = "easy"):
+        """
+        Point d’entrée unique pour un coup IA.
+        difficulty : "easy"|"medium"|"hard"
+        """
+        if self.game_over:
+            return
+
+        # Choix de la stratégie selon la difficulté
+        if difficulty == "easy":
+            # IA très simple, aléatoire
+            self.ai_move_random(self.get_game_state())
+        elif difficulty == "medium":
+            # A* heuristique
+            self.ai_move_a_star(self.get_game_state())
+        elif difficulty == "hard":
+            # Minimax alpha-beta (profondeur par ex. 2)
+            self.ia_move_minmax_ab(depth=2)
+        else:
+            raise ValueError(f"Difficulté inconnue : {difficulty}")
+
+        # après le coup IA, on passe au joueur suivant
+        #if not self.game_over:
+        #   self.switch_turn()
+    
+
     def ai_move_a_star(self, game_state: GameState):
         if self.game_over:
             return  # Ne rien faire si la partie est déjà finie
@@ -413,7 +534,7 @@ class QuoridorGame:
                 if finished:
                     return  # Le joueur a gagné, fin du tour
             else:  # placement de mur
-                self.place_wall(current_player.id, obj.model_dump())
+                self.place_wall(current_player.id, obj.dict())
         else:
             raise Exception("Aucun coup possible pour l’IA (move_a_star)")
     
@@ -452,10 +573,10 @@ class QuoridorGame:
         # Choisir un coup aléatoire parmi les coups légaux
         move_type, move_value = random.choice(legal_moves)
         if move_type == "move":
-            if self.move_pawn(current_player.id, move_value.model_dump()):
+            if self.move_pawn(current_player.id, move_value.dict()):
                 return # partie est finie 
         else:
-            self.place_wall(current_player.id, move_value.model_dump())
+            self.place_wall(current_player.id, move_value.dict())
 
     # def ai_move_random(self,gameState):
 
@@ -895,7 +1016,7 @@ class QuoridorGame:
                                     {"x": move.x, "y": move.y})
                 else:  # "wall"
                     self.place_wall(self.current_turn,
-                                    {"position": move.position.model_dump(),
+                                    {"position": move.position.dict(),
                                         "orientation": move.orientation}) # en pydantic dict => model_dump
                 val = self.minimax_ab(depth - 1, alpha, beta, False)
                 self.load_state(snap)
@@ -917,7 +1038,7 @@ class QuoridorGame:
                                     {"x": move.x, "y": move.y})
                 else:
                     self.place_wall(self.current_turn,
-                                    {"position": move.position.model_dump(),
+                                    {"position": move.position.dict(),
                                         "orientation": move.orientation})
                 val = self.minimax_ab(depth - 1, alpha, beta, True)
                 self.load_state(snap)
@@ -944,7 +1065,7 @@ class QuoridorGame:
                                 {"x": move.x, "y": move.y})
             else:
                 self.place_wall(self.current_turn,
-                                {"position": move.position.model_dump(),
+                                {"position": move.position.dict(),
                                     "orientation": move.orientation})
             val = self.minimax_ab(depth - 1, -math.inf, math.inf, False)
             self.load_state(snap)
@@ -974,7 +1095,7 @@ class QuoridorGame:
                 return # partie est finie
         else:  # "wall"
             self.place_wall(self.current_turn, {
-                "position": move.position.model_dump(),
+                "position": move.position.dict(),
                 "orientation": move.orientation
             })
                 

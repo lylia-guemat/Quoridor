@@ -4,12 +4,34 @@ document.addEventListener('DOMContentLoaded', () => {
     let selectedPawn = null;
     let gameState = null;
 
+    let isVsAI = false;
+    let gameMode = "2players";
+    let aiLevel = "";
+
+    if (window.APP_CONFIG) {
+        // Si on a bien injecté APP_CONFIG (page IA)
+        ({ isVsAI, gameMode, aiLevel } = window.APP_CONFIG);
+      }
+
     // Initialisation du plateau et récupération du state
     createBoard();
     fetchGameState();
 
     // Bouton « Recommencer »
     document.getElementById('restart-btn').addEventListener('click', restartGame);
+    document.getElementById('restart-btn2').addEventListener('click', restartGame);
+
+    document.getElementById('rules-btn').addEventListener('click', () => {
+        window.open('/rules', '_blank');
+    });
+    
+
+    document.getElementById('stop-btn').addEventListener('click', () => {
+        const mode = window.GAME_MODE || "2players";
+        fetch(`/api/restart?mode=${mode}`, { method: 'POST' })
+          .finally(() => window.location.href = '/');
+    });
+    
 
     function createBoard() {
         gameBoard.style.gridTemplateColumns = `repeat(${BOARD_SIZE * 2 - 1}, auto)`;
@@ -43,14 +65,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function fetchGameState() {
-        fetch('/api/game')
-            .then(res => res.json())
-            .then(state => {
-                gameState = state;
-                updateBoard();
-                updateUI();
-            });
-    }
+        const mode = window.GAME_MODE || "2players";
+        // On initialise la partie côté serveur
+        fetch(`/api/restart?mode=${mode}`, { method: 'POST' })
+          .then(res => res.json())
+          .then(state => {
+            gameState = state;
+            updateBoard();
+            updateUI();
+          })
+          .catch(err => console.error("Erreur init game:", err));
+      }      
+      
 
     function updateBoard() {
         // Efface pions et surlignages
@@ -104,14 +130,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         // Statut de fin de partie
         const status = document.getElementById('game-status');
+        const popup = document.getElementById('game-over-popup');
+        const winnerText = document.getElementById('winner-text');
+        const restart_btn2 = document.getElementById('restart-btn2');
+
         if (gameState.game_over) {
             status.textContent = `Partie terminée ! Joueur ${gameState.winner_id} gagne !`;
+            winnerText.textContent = `🏆 Joueur ${gameState.winner_id} a gagné !`;
+            popup.classList.remove('hidden');
+            if (restart_btn2) restart_btn2.classList.remove('hidden');
         } else {
             status.textContent = '';
+            popup.classList.add('hidden');
+            if (restart_btn2) restart_btn2.classList.add('hidden');
         }
+
+        
     }
 
     function showValidMoves(row, col) {
+        if (gameState.game_over) return;
         document.querySelectorAll('.cell').forEach(c => c.classList.remove('valid-move'));
         const dirs = [[-1,0],[1,0],[0,-1],[0,1]];
         dirs.forEach(([dr,dc]) => {
@@ -124,6 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleCellClick(e) {
+        if (gameState.game_over) return;
         const cell = e.target.closest('.cell');
         if (!cell) return;
         const row = parseInt(cell.dataset.row);
@@ -144,7 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function movePawn(row, col) {
-        fetch('/game/move', {
+        fetch(`/api/move?player_id=${gameState.current_turn}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -152,26 +191,37 @@ document.addEventListener('DOMContentLoaded', () => {
                 new_position: { x: col, y: row }
             })
         })
-        .then(res => res.json())
         .then(res => {
-            if (res.success) {
-                gameState = res.state;
-                selectedPawn = null;
-                updateBoard();
-                updateUI();
-                if (gameState.current_turn !== gameState.players[0].id) {
-                    setTimeout(makeAIMove, 500);
-                }
+            if (!res.ok) {
+                return res.json().then(err => { throw err; });
             }
+            return res.json();
+        })
+        .then(res => {
+            gameState = res;
+            selectedPawn = null;
+            updateBoard();
+            updateUI();
+            console.log(isVsAI);
+            if (isVsAI && gameState.current_turn !== gameState.players[0].id) {
+                setTimeout(makeAIMove, 500);
+            }
+        })
+        .catch(err => {
+            console.error("Erreur de déplacement :", err);
+            showError(err.detail || "Déplacement invalide");
         });
     }
+    
 
     function handleWallClick(e) {
+        if (gameState.game_over) return;
         const ws = e.target;
         const row = parseInt(ws.dataset.row);
         const col = parseInt(ws.dataset.col);
         const ori = ws.dataset.orientation;
-        fetch('/game/move', {
+    
+        fetch(`/api/move?player_id=${gameState.current_turn}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -182,30 +232,53 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             })
         })
-        .then(res => res.json())
         .then(res => {
-            if (res.success) {
-                gameState = res.state;
-                updateBoard();
-                updateUI();
-                if (gameState.current_turn !== gameState.players[0].id) {
-                    setTimeout(makeAIMove, 500);
-                }
+            if (!res.ok) {
+                // Si erreur 400, on récupère le message et on le renvoie sous forme d’erreur JS
+                return res.json().then(err => { throw err; });
             }
+            return res.json();
+        })
+        .then(res => {
+            gameState = res;
+            updateBoard();
+            updateUI();
+            if (isVsAI && gameState.current_turn !== gameState.players[0].id) {
+                setTimeout(makeAIMove, 500);
+            }
+        })
+        .catch(err => {
+            console.error("Erreur placement mur :", err);
+            showError(err.detail || "Placement de mur invalide");
+            updateBoard();
+            updateUI();
         });
     }
+    
 
     function makeAIMove() {
-        fetch('/game/ai-move', { method: 'POST' })
-            .then(res => res.json())
-            .then(res => {
-                if (res.success) {
-                    gameState = res.state;
-                    updateBoard();
-                    updateUI();
-                }
-            });
-    }
+        // on récupère le niveau depuis la config
+        const level = window.APP_CONFIG?.aiLevel || 'easy';
+        fetch(`/api/ai_move?difficulty=${level}`, { method: 'POST' })
+          .then(res => {
+            if (!res.ok) {
+              // gère l'erreur éventuelle
+              return res.json().then(err => { throw err; });
+            }
+            return res.json();
+          })
+          .then(state => {
+            // la réponse est directement le GameState
+            gameState = state;
+            updateBoard();
+            updateUI();
+          })
+          .catch(err => {
+            console.error("Erreur IA :", err);
+            showError(err.detail || "Erreur IA");
+          });
+      }
+      
 
     function showWallPreview(e) {
         const ws = e.target;
@@ -219,15 +292,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function restartGame() {
-        fetch('/game/restart', { method: 'POST' })
-            .then(res => res.json())
-            .then(res => {
-                if (res.success) {
-                    gameState = res.state;
-                    selectedPawn = null;
-                    updateBoard();
-                    updateUI();
-                }
-            });
+        const mode = window.GAME_MODE || "2players";
+        fetch(`/api/restart?mode=${mode}`, { method: "POST" })
+          .then(res => res.json())
+          .then(state => {
+            gameState = state;
+            selectedPawn = null;
+            updateBoard();
+            updateUI();
+          });
+      }
+
+    function showError(message) {
+        const errorDiv = document.getElementById('error-message');
+        errorDiv.textContent = message;
+        errorDiv.classList.remove('hidden');
+    
+        // Cacher automatiquement après 3 secondes
+        setTimeout(() => {
+            errorDiv.classList.add('hidden');
+        }, 3000);
     }
+    
+    
 });

@@ -1,34 +1,59 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Quoridor - 2 Joueurs</title>
     <link rel="stylesheet" href="/static/css/style.css">
+
+    <script>
+        window.APP_CONFIG = {
+            isVsAI: `{{ isVsAI | lower }}`,
+            gameMode: "{{ mode }}",
+            aiLevel: "{{ aiDifficulty or '' }}"
+        };
+    </script>
+
 </head>
+
+<div id="game-over-popup" class="popup hidden">
+    <div class="popup-content">
+        <h2 id="winner-text"></h2>
+        <button id="restart-btn2">Rejouer</button>
+    </div>
+</div>
+
+
 <body>
+    <div id="error-message" class="error hidden"></div>
+
     <div class="container">
         <div class="left-section">
+
             <h1>Quoridor - 2 Joueurs</h1>
+
+            <div class="current-turn">
+                Tour: <span id="current-player">Joueur 1</span>
+            </div>
+            <div class="game-status" id="game-status"></div>
+
             <div class="game-container">
                 <!-- Joueur 2 (haut) -->
-                <div class="player player-2 top-player">
-                    <h3>Joueur 2</h3>
-                    <div class="walls-count">Murs: <span id="player2-walls">10</span></div>
+                <div class="player player-1 top-player">
+                    <h3>Joueur 1</h3>
+                    <div class="walls-count">Murs: <span id="player1-walls">10</span></div>
                 </div>
 
                 <!-- Plateau de jeu -->
                 <div class="game-board" id="game-board"></div>
 
                 <!-- Joueur 1 (bas) -->
-                <div class="player player-1 bottom-player">
-                    <h3>Joueur 1</h3>
-                    <div class="walls-count">Murs: <span id="player1-walls">10</span></div>
+                <div class="player player-2 bottom-player">
+                    <h3>Joueur 2</h3>
+                    <div class="walls-count">Murs: <span id="player2-walls">10</span></div>
                 </div>
             </div>
 
-            <div class="current-turn">
-                Tour: <span id="current-player">Joueur 1</span>
-            </div>
-            <div class="game-status" id="game-status"></div>
+
         </div>
 
         <div class="right-section">
@@ -41,4 +66,5 @@
     </div>
     <script src="/static/js/app.js"></script>
 </body>
+
 </html>

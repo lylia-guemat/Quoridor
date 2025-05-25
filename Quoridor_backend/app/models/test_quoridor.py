@@ -1,6 +1,6 @@
 import unittest
-from Quoridor_backend.app.schemas.game_schema import Position, Wall, GameState, Player
-from Quoridor_backend.app.models.game import QuoridorGame
+from app.schemas.game_schema import Position, Wall, GameState, Player
+from app.models.game import QuoridorGame
 
 class TestQuoridorGame(unittest.TestCase):
 
