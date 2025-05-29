@@ -1,6 +1,11 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..')))
+
 import unittest
 from app.schemas.game_schema import Position, Wall, GameState, Player
 from app.models.game import QuoridorGame
+
 
 class TestQuoridorGame(unittest.TestCase):
 
@@ -234,6 +239,115 @@ class TestQuoridorGame(unittest.TestCase):
         print("Vérifie la position de départ correcte pour 4 joueurs")
         self.game.print_board()
         self.assertEqual(result, expected)
+
+
+    # ----------Test A* ---------
+    # Teste A* sans murs
+    def test_astar_returns_valid_path_length(self):
+        game = QuoridorGame()
+        
+        # Créer un GameState factice simple avec deux pions et aucun mur
+        game_state = GameState(
+            board=[["" for _ in range(9)] for _ in range(9)],  # un plateau vide 9x9
+
+            players=[
+                Player(id=1, pawn=Position(x=4, y=0), remaining_walls=10),
+                Player(id=2, pawn=Position(x=4, y=8), remaining_walls=10)
+            ],
+            walls=[],
+            current_turn=1,
+            game_over=False,
+            winner_id=None
+        )
+        self.game.print_board()
+
+        player = game_state.players[0]
+
+        path_length = game.a_star(player, game_state)
+        print(f"Path length from (4,8) to goal: {path_length}")
+        player = game_state.players[0]
+
+        self.assertIsInstance(path_length, int)
+        self.assertGreater(path_length, 0)
+        self.assertLessEqual(path_length, 9)
+
+    # Test A* avec un mur bloquant le chemin direct
+    def test_astar_with_blocking_wall(self):
+        # Créer une instance de jeu
+        game = QuoridorGame()
+
+        # Construire un plateau 9x9 vide
+        board = [["" for _ in range(9)] for _ in range(9)]
+
+        # Placer les joueurs : joueur 1 en haut, joueur 2 en bas
+        players = [
+            Player(id=1, pawn=Position(x=4, y=0), remaining_walls=10),
+            Player(id=2, pawn=Position(x=4, y=8), remaining_walls=10)
+        ]
+
+        # Ajouter un mur horizontal juste devant le joueur 1 pour bloquer le chemin direct
+        walls = [
+            Wall(position=Position(x=4, y=0), orientation="horizontal")
+        ]
+
+        # Construire l'état du jeu avec tout ce qu'il faut
+        game_state = GameState(
+            board=board,
+            players=players,
+            walls=walls,
+            current_turn=1,
+            game_over=False,
+            winner_id=None
+        )
+
+        # Calculer le chemin A* pour le joueur 1
+        player = players[0]
+        path_length = game.a_star(player, game_state)
+
+        print(f"Path length for Player 1 with blocking wall: {path_length}")
+        # Assertions
+        self.assertIsInstance(path_length, int)
+        self.assertGreater(path_length, 0)  # doit être > 0
+        self.assertLessEqual(path_length, 16)  # ne doit pas exploser en longueur
+
+    def test_astar_with_multiple_walls(self):
+        """Teste A* avec plusieurs murs bloquant le chemin direct"""
+        game = QuoridorGame()
+
+        # Créer un GameState factice avec des murs
+        game_state = GameState(
+            board=[["" for _ in range(9)] for _ in range(9)],
+            players=[
+                Player(id=1, pawn=Position(x=4, y=0), remaining_walls=10),
+                Player(id=2, pawn=Position(x=4, y=8), remaining_walls=10)
+            ],
+            walls=[
+                Wall(position=Position(x=3, y=0), orientation="horizontal"),
+                Wall(position=Position(x=5, y=0), orientation="horizontal"),
+                Wall(position=Position(x=4, y=1), orientation="vertical"),
+                Wall(position=Position(x=4, y=2), orientation="vertical")
+            ],
+            current_turn=1,
+            game_over=False,
+            winner_id=None
+        )
+
+        player = game_state.players[0]
+
+        path_length = game.a_star(player, game_state)
+        print(f"Path length with multiple walls: {path_length}")
+
+        self.assertIsInstance(path_length, int)
+        self.assertGreater(path_length, 0)
+        self.assertLessEqual(path_length, 16)
+
+if __name__ == "__main__":
+    unittest.main()
+
+
+
+
+
 
 
 if __name__ == '__main__':

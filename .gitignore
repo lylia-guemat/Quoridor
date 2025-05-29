@@ -1,0 +1,6 @@
+# Environnement virtuel Python
+fastapi-env/
+venv/
+.env/
+__pycache__/
+*.py[cod]

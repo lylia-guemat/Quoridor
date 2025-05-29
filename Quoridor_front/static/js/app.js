@@ -144,22 +144,51 @@ document.addEventListener('DOMContentLoaded', () => {
             popup.classList.add('hidden');
             if (restart_btn2) restart_btn2.classList.add('hidden');
         }
-
-        
     }
+
+    // function showValidMoves(row, col) {
+    //     if (gameState.game_over) return;
+    //     document.querySelectorAll('.cell').forEach(c => c.classList.remove('valid-move'));
+    //     const dirs = [[-1,0],[1,0],[0,-1],[0,1]];
+    //     dirs.forEach(([dr,dc]) => {
+    //         const nr = row + dr, nc = col + dc;
+    //         if (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE) {
+    //             const c = document.querySelector(`.cell[data-row="${nr}"][data-col="${nc}"]`);
+    //             if (c && !c.querySelector('.pawn')) c.classList.add('valid-move');
+    //         }
+    //     });
+    // }
 
     function showValidMoves(row, col) {
         if (gameState.game_over) return;
-        document.querySelectorAll('.cell').forEach(c => c.classList.remove('valid-move'));
-        const dirs = [[-1,0],[1,0],[0,-1],[0,1]];
-        dirs.forEach(([dr,dc]) => {
-            const nr = row + dr, nc = col + dc;
-            if (nr >= 0 && nr < BOARD_SIZE && nc >= 0 && nc < BOARD_SIZE) {
-                const c = document.querySelector(`.cell[data-row="${nr}"][data-col="${nc}"]`);
-                if (c && !c.querySelector('.pawn')) c.classList.add('valid-move');
-            }
-        });
+    
+        // 1) Supprime l’ancien surlignage
+        document.querySelectorAll('.cell').forEach(c =>
+            c.classList.remove('valid-move')
+        );
+    
+        // 2) Appel au serveur qui utilise get_valid_pawn_moves
+        fetch('/api/showValidMoves', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ player_id: gameState.current_turn })
+        })
+        .then(res => {
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return res.json();
+        })
+        .then(moves => {
+            // 3) Pour chaque position renvoyée, on ajoute la classe CSS
+            moves.forEach(({ x, y }) => {
+                const cell = document.querySelector(
+                    `.cell[data-row="${y}"][data-col="${x}"]`
+                );
+                if (cell) cell.classList.add('valid-move');
+            });
+        })
+        .catch(err => console.error("Erreur showValidMoves :", err));
     }
+    
 
     function handleCellClick(e) {
         if (gameState.game_over) return;

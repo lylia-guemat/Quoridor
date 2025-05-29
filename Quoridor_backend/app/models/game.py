@@ -87,37 +87,105 @@ class QuoridorGame:
             return True
 
         return False
-    def is_valid_face_to_face_move(self, player: Player, new_pos: Position) -> bool:
-        # Vérifie si le déplacement est face à face avec un autre joueur
-        opponent = self.get_opponent(player)
-        if (new_pos.x, new_pos.y) == (opponent.pawn.x, opponent.pawn.y):
-            # Tentative de saut par-dessus l'adversaire
-            jump_x = opponent.pawn.x + (opponent.pawn.x - player.pawn.x)
-            jump_y = opponent.pawn.y + (opponent.pawn.y - player.pawn.y)
-            jump_pos = Position(x=jump_x, y=jump_y)
+    
+    def is_valid_face_to_face_move(self, player: Player,
+                                   new_pos: Position) -> bool:
+        """
+        Vérifie si le déplacement de 'player' vers 'new_pos' correspond à un saut face-à-face valide.
+        Gère :
+        - Saut direct (2 cases orthogonales) si le pion adverse est directement adjacent,
+        - Saut diagonal (1 case en diagonale) si le saut direct est bloqué par un mur.
+        """
+        from_x, from_y = player.pawn.x, player.pawn.y
+        dx = new_pos.x - from_x
+        dy = new_pos.y - from_y
+        abs_dx = abs(dx)
+        abs_dy = abs(dy)
 
-            # Vérifie si le saut direct est bloqué par un mur
-            if self.wall_blocks_move(player.pawn, opponent.pawn) or self.wall_blocks_move(opponent.pawn, jump_pos):
+        # Cas 1 : Saut direct (deux cases en ligne droite)
+        if (abs_dx == 2 and dy == 0) or (abs_dy == 2 and dx == 0):
+            mid_x = from_x + (dx // 2)
+            mid_y = from_y + (dy // 2)
+
+            # Vérifier qu'un adversaire occupe la case intermédiaire
+            if not any(p.id != player.id and p.pawn.x == mid_x
+                       and p.pawn.y == mid_y for p in self.players):
                 return False
 
-            # Vérifie si le saut direct est valide
-            if self.is_valid_move(player, jump_pos):
-                return True
+            # Vérifier que les passages ne sont pas bloqués par des murs
+            if self.wall_blocks_move(player.pawn, Position(x=mid_x, y=mid_y)):
+                return False
+            if self.wall_blocks_move(Position(x=mid_x, y=mid_y), new_pos):
+                return False
+            # Vérifier que la case destination est libre
+            if any(p.pawn.x == new_pos.x and p.pawn.y == new_pos.y
+                   for p in self.players):
+                return False
+            return True
 
-            # Vérifie les diagonales
-            for dx, dy in [(-1, 1), (1, 1), (-1, -1), (1, -1)]:
-                diag_x = opponent.pawn.x + dx
-                diag_y = opponent.pawn.y + dy
-                diag_pos = Position(x=diag_x, y=diag_y)
+        # Cas 2 : Saut diagonal (1 case en diagonale)
+        if abs_dx == 1 and abs_dy == 1:
+            # On vérifie pour chaque direction cardinale si un adversaire est adjacent
+            directions = {
+                "north": {
+                    "adjacent": (from_x, from_y + 1),
+                    "behind": (from_x, from_y + 2),
+                    "diagonals": [(from_x - 1, from_y + 1),
+                                  (from_x + 1, from_y + 1)]
+                },
+                "south": {
+                    "adjacent": (from_x, from_y - 1),
+                    "behind": (from_x, from_y - 2),
+                    "diagonals": [(from_x - 1, from_y - 1),
+                                  (from_x + 1, from_y - 1)]
+                },
+                "east": {
+                    "adjacent": (from_x + 1, from_y),
+                    "behind": (from_x + 2, from_y),
+                    "diagonals": [(from_x + 1, from_y - 1),
+                                  (from_x + 1, from_y + 1)]
+                },
+                "west": {
+                    "adjacent": (from_x - 1, from_y),
+                    "behind": (from_x - 2, from_y),
+                    "diagonals": [(from_x - 1, from_y - 1),
+                                  (from_x - 1, from_y + 1)]
+                }
+            }
 
-                # Vérifie si un mur bloque le saut diagonal
-                if self.wall_blocks_move(opponent.pawn, diag_pos):
+            for direction, info in directions.items():
+                adj_x, adj_y = info["adjacent"]
+
+                # Vérifier si un adversaire est bien dans la direction orthogonale
+                if not any(p.id != player.id and p.pawn.x == adj_x
+                           and p.pawn.y == adj_y for p in self.players):
                     continue
 
-                if self.is_valid_move(player, diag_pos):
-                    return True
+                behind_x, behind_y = info["behind"]
+                # Si la case derrière est hors du plateau, on considère qu'elle est bloquée
+                behind_blocked = not (0 <= behind_x < 9 and 0 <= behind_y < 9)
+                # Sinon, vérifier si un mur bloque le passage derrière l'adversaire
+                if not behind_blocked:
+                    if self.wall_blocks_move(Position(x=adj_x, y=adj_y),
+                                             Position(x=behind_x, y=behind_y)):
+                        behind_blocked = True
 
+                if behind_blocked:
+                    for diag_x, diag_y in info["diagonals"]:
+                        if (new_pos.x, new_pos.y) == (diag_x, diag_y):
+                            # Vérification des bornes AVANT de vérifier les murs
+                            if not (0 <= diag_x < 9 and 0 <= diag_y < 9):
+                                continue
+                            if self.wall_blocks_move(Position(x=from_x, y=from_y), Position(x=diag_x, y=diag_y)):
+                                continue
+                            if any(p.pawn.x == diag_x and p.pawn.y == diag_y for p in self.players):
+                                continue
+                            return True
+            return False
+
+        # Si aucun des cas face-à-face n'est satisfait, le saut n'est pas valide
         return False
+
 
     def wall_blocks_move(self, from_pos: Position, to_pos: Position) -> bool:
         # Pour chaque mur, vérifier s'il bloque le déplacement entre les deux cases
@@ -160,34 +228,6 @@ class QuoridorGame:
         self.switch_turn()
         return False  # partie continue
 
-
-    # def move_pawn(self, player_id: int, new_pos: dict):
-    #     logger.info(
-    #         f"Déplacement demandé pour le joueur {player_id} vers {new_pos}")
-
-    #     if self.game_over:
-    #         raise Exception(
-    #             "La partie est terminée, aucun autre coup n'est accepté.")
-
-    #     # new_pos est un dictionnaire contenant x et y
-    #     new_position = Position(**new_pos)
-    #     player = next((p for p in self.players if p.id == player_id), None)
-    #     if not player:
-    #         raise Exception("Joueur non trouvé")
-    #     if not self.is_valid_move(player, new_position):
-    #         raise Exception("Déplacement invalide")
-
-    #     # Déplacement du pion
-    #     player.pawn = new_position
-
-    #     # Vérifier la condition de victoire pour le joueur actuel
-    #     if self.has_won(player):
-    #         print(f"Le joueur {player.id} a gagné!")
-    #         self.game_over = True
-    #         self.winner_id = player.id
-    #         return
-
-    #     self.switch_turn()
 
     def has_won(self, player: Player) -> bool:
         """
@@ -313,53 +353,281 @@ class QuoridorGame:
 
    
   
+    # def is_valid_wall(self, wall: Wall, walls: Optional[List[Wall]] = None) -> bool:
+    #     walls = walls if walls is not None else self.walls
+    #     # print(f"[DEBUG] Testing wall at {wall.position.x},{wall.position.y} orientation={wall.orientation} against {len(walls)} existing walls")
+
+    #     if wall.orientation not in ["horizontal", "vertical"]:
+    #         #print(f"[DEBUG] Invalid orientation: {wall.orientation}")
+    #         return False
+
+    #     # Bornes de la grille (0 <= x,y < 8)
+    #     if not (0 <= wall.position.x < 8 and 0 <= wall.position.y < 8):
+    #         #print(f"[DEBUG] Out of bounds: x={wall.position.x}, y={wall.position.y}")
+    #         return False
+
+    #     # Les checks de sortie de grille pour orientation ne sont plus nécessaires
+
+    #     for w in walls:
+    #         # --- Cas 1 : même orientation => chevauchement interdit
+    #         if w.orientation == wall.orientation:
+    #             if wall.orientation == "horizontal":
+    #                 # Empêche tout chevauchement ou contiguïté horizontale
+    #                 if w.position.y == wall.position.y and abs(w.position.x - wall.position.x) <= 1:
+    #                     #print(f"[DEBUG] Overlap horizontal with existing at x={w.position.x}, y={w.position.y}")
+    #                     return False
+    #             elif wall.orientation == "vertical":
+    #                 if w.position.x == wall.position.x and abs(w.position.y - wall.position.y) <= 1:
+    #                     #print(f"[DEBUG] Overlap vertical with existing at x={w.position.x}, y={w.position.y}")
+    #                     return False
+
+    #         # --- Cas 2 : orientations différentes => croisement interdit
+    #         else:
+    #             # Croisement interdit: murs se croisent en T
+    #             # Horizontal vs Vertical
+    #             if wall.orientation == "horizontal" and w.orientation == "vertical":
+    #                 # Interdiction si vertical commence dans l’intervalle du horizontal
+    #                 if (wall.position.x <= w.position.x <= wall.position.x + 1 and
+    #                     w.position.y == wall.position.y):
+    #                     #print(f"[DEBUG] Crossing detected at {wall.position.x},{wall.position.y} with vertical {w.position.x},{w.position.y}")
+    #                     return False
+
+    #             elif wall.orientation == "vertical" and w.orientation == "horizontal":
+    #                 if (wall.position.x == w.position.x and
+    #                     wall.position.y <= w.position.y <= wall.position.y + 1):
+    #                     #print(f"[DEBUG] Crossing detected at {wall.position.x},{wall.position.y} with horizontal {w.position.x},{w.position.y}")
+    #                     return False
+
+    #     #print(f"[DEBUG] Wall valid at {wall.position.x},{wall.position.y}")
+    #     return True
+    # def is_valid_wall(self, wall: Wall, walls: Optional[List[Wall]] = None) -> bool:
+    #     """
+    #     Vérifie si un mur peut être placé légalement :
+    #     - Orientation correcte
+    #     - Position dans la grille
+    #     - Pas de superposition exacte
+    #     - Pas de chevauchement partiel (même orientation)
+    #     - Pas de croisement en croix (mur horizontal et vertical au même centre)
+    #     """
+    #     walls = walls if walls is not None else self.walls
+
+    #     # 1. Vérifie orientation valide
+    #     if wall.orientation not in ["horizontal", "vertical"]:
+    #         return False
+
+    #     # 2. Vérifie limites de la grille (0 à 7 car un mur couvre 2 cases)
+    #     if not (0 <= wall.position.x < 8 and 0 <= wall.position.y < 8):
+    #         return False
+
+    #     # 3. Récupère les cellules couvertes par le mur à placer
+    #     wall_cells = (
+    #         {(wall.position.x, wall.position.y), (wall.position.x + 1, wall.position.y)}
+    #         if wall.orientation == "horizontal"
+    #         else {(wall.position.x, wall.position.y), (wall.position.x, wall.position.y + 1)}
+    #     )
+
+    #     for w in walls:
+    #         # 4. Superposition exacte (même position et même orientation)
+    #         if w.position == wall.position and w.orientation == wall.orientation:
+    #             return False
+
+    #         # 5. Récupère les cellules couvertes par le mur existant
+    #         w_cells = (
+    #             {(w.position.x, w.position.y), (w.position.x + 1, w.position.y)}
+    #             if w.orientation == "horizontal"
+    #             else {(w.position.x, w.position.y), (w.position.x, w.position.y + 1)}
+    #         )
+
+    #         # 6. Chevauchement partiel (si même orientation et cases partagées)
+    #         if w.orientation == wall.orientation and wall_cells & w_cells:
+    #             return False
+
+    #         # 7. Croisement en croix : cas très précis d'intersection centrale
+    #         # 7. Croisement exact en croix : mur horizontal et vertical se croisent au même point central
+    #         if wall.orientation == "horizontal" and w.orientation == "vertical":
+    #             if (wall.position.x + 1 == w.position.x and
+    #                 wall.position.y == w.position.y):
+    #                 return False
+
+    #         elif wall.orientation == "vertical" and w.orientation == "horizontal":
+    #             if (wall.position.x == w.position.x and
+    #                 wall.position.y + 1 == w.position.y):
+    #                 return False
+
+
+
+    #     return True
+    # def is_valid_wall(self, wall: Wall, walls: Optional[List[Wall]] = None) -> bool:
+    #     """
+    #     Vérifie la validité d’un mur à placer selon les règles officielles :
+    #     - Position et orientation valides
+    #     - Pas de superposition
+    #     - Pas de chevauchement partiel (même orientation)
+    #     - Pas de croisement central entre deux murs perpendiculaires
+    #     """
+    #     walls = walls if walls is not None else self.walls
+
+    #     if wall.orientation not in ["horizontal", "vertical"]:
+    #         return False
+
+    #     if not (0 <= wall.position.x < 8 and 0 <= wall.position.y < 8):
+    #         return False
+
+    #     if wall.orientation == "horizontal":
+    #         wall_cells = {(wall.position.x, wall.position.y), (wall.position.x + 1, wall.position.y)}
+    #     else:
+    #         wall_cells = {(wall.position.x, wall.position.y), (wall.position.x, wall.position.y + 1)}
+
+    #     for w in walls:
+    #         if w.orientation == "horizontal":
+    #             w_cells = {(w.position.x, w.position.y), (w.position.x + 1, w.position.y)}
+    #         else:
+    #             w_cells = {(w.position.x, w.position.y), (w.position.x, w.position.y + 1)}
+
+    #         # 1. Superposition exacte
+    #         if wall.position == w.position and wall.orientation == w.orientation:
+    #             return False
+
+    #         # 2. Chevauchement partiel si même orientation (au moins une cellule en commun)
+    #         if wall.orientation == w.orientation and wall_cells & w_cells:
+    #             return False
+
+    #         # 3. Croisement en croix stricte : exactement 1 cellule partagée + orientations différentes
+    #         if wall.orientation == "horizontal" and w.orientation == "vertical":
+    #             if wall.position.x + 1 == w.position.x and wall.position.y == w.position.y:
+    #                 return False
+
+    #         elif wall.orientation == "vertical" and w.orientation == "horizontal":
+    #             if wall.position.x == w.position.x and wall.position.y + 1 == w.position.y:
+    #                 return False
+
+
+    #     return True
     def is_valid_wall(self, wall: Wall, walls: Optional[List[Wall]] = None) -> bool:
+        """
+        Vérifie si un mur est légal selon les règles officielles de Quoridor :
+        - Orientation correcte (horizontal ou vertical)
+        - Position dans la grille (0 <= x, y <= 7)
+        - Pas de superposition exacte
+        - Pas de chevauchement partiel
+        - Croisement central exact en “+” autorisé
+        - Autres croisements interdits
+        """
         walls = walls if walls is not None else self.walls
-        # print(f"[DEBUG] Testing wall at {wall.position.x},{wall.position.y} orientation={wall.orientation} against {len(walls)} existing walls")
 
+        # 1. Orientation
         if wall.orientation not in ["horizontal", "vertical"]:
-            #print(f"[DEBUG] Invalid orientation: {wall.orientation}")
             return False
 
-        # Bornes de la grille (0 <= x,y < 8)
+        # 2. Position dans la grille (mur couvre 2 cases)
         if not (0 <= wall.position.x < 8 and 0 <= wall.position.y < 8):
-            #print(f"[DEBUG] Out of bounds: x={wall.position.x}, y={wall.position.y}")
             return False
 
-        # Les checks de sortie de grille pour orientation ne sont plus nécessaires
+        # 3. Cases couvertes par le mur proposé
+        if wall.orientation == "horizontal":
+            wall_cells = {(wall.position.x, wall.position.y), (wall.position.x + 1, wall.position.y)}
+        else:
+            wall_cells = {(wall.position.x, wall.position.y), (wall.position.x, wall.position.y + 1)}
 
         for w in walls:
-            # --- Cas 1 : même orientation => chevauchement interdit
-            if w.orientation == wall.orientation:
-                if wall.orientation == "horizontal":
-                    # Empêche tout chevauchement ou contiguïté horizontale
-                    if w.position.y == wall.position.y and abs(w.position.x - wall.position.x) <= 1:
-                        #print(f"[DEBUG] Overlap horizontal with existing at x={w.position.x}, y={w.position.y}")
-                        return False
-                elif wall.orientation == "vertical":
-                    if w.position.x == wall.position.x and abs(w.position.y - wall.position.y) <= 1:
-                        #print(f"[DEBUG] Overlap vertical with existing at x={w.position.x}, y={w.position.y}")
-                        return False
-
-            # --- Cas 2 : orientations différentes => croisement interdit
+            # 4. Cases couvertes par un mur existant
+            if w.orientation == "horizontal":
+                existing_cells = {(w.position.x, w.position.y), (w.position.x + 1, w.position.y)}
             else:
-                # Croisement interdit: murs se croisent en T
-                # Horizontal vs Vertical
-                if wall.orientation == "horizontal" and w.orientation == "vertical":
-                    # Interdiction si vertical commence dans l’intervalle du horizontal
-                    if (wall.position.x <= w.position.x <= wall.position.x + 1 and
-                        w.position.y == wall.position.y):
-                        #print(f"[DEBUG] Crossing detected at {wall.position.x},{wall.position.y} with vertical {w.position.x},{w.position.y}")
+                existing_cells = {(w.position.x, w.position.y), (w.position.x, w.position.y + 1)}
+
+            # 5. Superposition exacte
+            if wall.orientation == w.orientation and wall.position == w.position:
+                return False
+
+            # 6. Chevauchement partiel interdit (même direction et cases partagées)
+            if wall.orientation == w.orientation and wall_cells & existing_cells:
+                return False
+
+            # 7. Croisement interdit sauf croisement central exact “+”
+            if wall.orientation != w.orientation:
+                intersection = wall_cells & existing_cells
+                if len(intersection) == 1:
+                    i = next(iter(intersection))
+                    allowed = (
+                        (wall.orientation == "horizontal" and i == (wall.position.x + 1, wall.position.y)) or
+                        (wall.orientation == "vertical" and i == (wall.position.x, wall.position.y + 1)) or
+                        (w.orientation == "horizontal" and i == (w.position.x + 1, w.position.y)) or
+                        (w.orientation == "vertical" and i == (w.position.x, w.position.y + 1))
+                    )
+                    if not allowed:
                         return False
 
-                elif wall.orientation == "vertical" and w.orientation == "horizontal":
-                    if (wall.position.x == w.position.x and
-                        wall.position.y <= w.position.y <= wall.position.y + 1):
-                        #print(f"[DEBUG] Crossing detected at {wall.position.x},{wall.position.y} with horizontal {w.position.x},{w.position.y}")
-                        return False
 
-        #print(f"[DEBUG] Wall valid at {wall.position.x},{wall.position.y}")
+            
         return True
+
+    # def is_valid_wall(self, wall: Wall, walls: Optional[List[Wall]] = None) -> bool:
+    #     walls = walls if walls is not None else self.walls
+
+    #     if wall.orientation not in ["horizontal", "vertical"]:
+    #         return False
+
+    #     if not (0 <= wall.position.x < 8 and 0 <= wall.position.y < 8):
+    #         return False
+
+    #     if wall.orientation == "horizontal":
+    #         wall_cells = {(wall.position.x, wall.position.y), (wall.position.x + 1, wall.position.y)}
+    #     else:
+    #         wall_cells = {(wall.position.x, wall.position.y), (wall.position.x, wall.position.y + 1)}
+
+    #     for w in walls:
+    #         if w.orientation == "horizontal":
+    #             existing_cells = {(w.position.x, w.position.y), (w.position.x + 1, w.position.y)}
+    #         else:
+    #             existing_cells = {(w.position.x, w.position.y), (w.position.x, w.position.y + 1)}
+
+    #         # 1. Superposition exacte
+    #         if wall.orientation == w.orientation and wall.position == w.position:
+    #             return False
+
+    #         # 2. Chevauchement partiel interdit (même orientation + cases partagées)
+    #         if wall.orientation == w.orientation and wall_cells & existing_cells:
+    #             return False
+
+    #         # 3. Croisement autorisé uniquement si c’est un croisement central exact
+            
+    #         if wall.orientation != w.orientation:
+    #             intersection = wall_cells & existing_cells
+    #             if len(intersection) == 1:
+    #                 i = next(iter(intersection))
+
+    #                 # Vérifie si le croisement est un "+" parfait indépendamment de l’ordre
+    #                 if (
+    #                     (wall.orientation == "horizontal" and
+    #                     w.orientation == "vertical" and
+    #                     wall.position == Position(x=w.position.x - 1, y=w.position.y) and
+    #                     i == (w.position.x, w.position.y))
+    #                     or
+    #                     (wall.orientation == "vertical" and
+    #                     w.orientation == "horizontal" and
+    #                     wall.position == Position(x=w.position.x, y=w.position.y - 1) and
+    #                     i == (w.position.x, w.position.y))
+    #                     or
+    #                     (w.orientation == "horizontal" and
+    #                     wall.orientation == "vertical" and
+    #                     w.position == Position(x=wall.position.x - 1, y=wall.position.y) and
+    #                     i == (wall.position.x, wall.position.y))
+    #                     or
+    #                     (w.orientation == "vertical" and
+    #                     wall.orientation == "horizontal" and
+    #                     w.position == Position(x=wall.position.x, y=wall.position.y - 1) and
+    #                     i == (wall.position.x, wall.position.y))
+    #                 ):
+    #                     continue  # croisement central autorisé 
+
+    #             return False  # tout autre croisement est interdit 
+
+
+
+    #     return True
+
+
 
 
     def place_wall(self, player_id: int, wall_data: dict):
@@ -399,34 +667,6 @@ class QuoridorGame:
         return True
 
 
-
-    # def has_path(self, start: Position, player_id: int) -> bool:
-    #     """
-    #     BFS (Breadth-First Search) pour vérifier qu'il existe un chemin depuis la position 'start'
-    #     jusqu'à la ligne opposée (y=8 pour le joueur 1, y=0 pour le joueur 2, etc.)
-    #     """
-    #     goal_row = 8 if player_id == 1 else 0  
-    #     visited = set()
-    #     queue = deque()
-    #     queue.append((start.x, start.y))
-    #     visited.add((start.x, start.y))
-
-    #     while queue:
-    #         cx, cy = queue.popleft()
-    #         # Condition de victoire : atteindre la ligne opposée
-    #         if cy == goal_row:
-    #             return True
-
-    #         for dx, dy in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
-    #             nx, ny = cx + dx, cy + dy
-    #             if 0 <= nx < 9 and 0 <= ny < 9:
-    #                 if (nx, ny) not in visited:
-    #                     # Vérifier qu'aucun mur ne bloque le déplacement
-    #                     if not self.wall_blocks_move(Position(x=cx, y=cy),
-    #                                                  Position(x=nx, y=ny)):
-    #                         visited.add((nx, ny))
-    #                         queue.append((nx, ny))
-    #     return False
     def has_path(self, start: Position, player_id: int, game_state: Optional[GameState] = None) -> bool:
         """
         Vérifie s’il existe un chemin légal (selon les règles Quoridor)
@@ -491,15 +731,10 @@ class QuoridorGame:
             # A* heuristique
             self.ai_move_a_star(self.get_game_state())
         elif difficulty == "hard":
-            # Minimax alpha-beta (profondeur par ex. 2)
+            # Minimax alpha-beta (profondeur 2)
             self.ia_move_minmax_ab(depth=2)
         else:
             raise ValueError(f"Difficulté inconnue : {difficulty}")
-
-        # après le coup IA, on passe au joueur suivant
-        #if not self.game_over:
-        #   self.switch_turn()
-    
 
     def ai_move_a_star(self, game_state: GameState):
         if self.game_over:
@@ -513,21 +748,29 @@ class QuoridorGame:
         best_score = -math.inf
 
         # Évaluer les déplacements de pion
-        move_score, best_position = self.evaluate_pawn_moves(current_player, game_state)
+        move_score, best_position, valid_moves = self.evaluate_pawn_moves(current_player, game_state)
         if move_score > best_score:
             best_score = move_score
             best_move = ("move", best_position)
-
+            print(f"[DEBUG] Meilleur déplacement pour le pion : {best_position} avec score {move_score}")
         # Évaluer les placements de mur si le joueur a encore des murs
         if current_player.remaining_walls > 0:
+            
             wall_score, best_wall = self.evaluate_best_wall_placement(current_player, opponent, game_state)
-            if wall_score > best_score:
+            print(f"[DEBUG] MUR  coup trouvé : {best_wall} avec score {wall_score}")
+
+            if best_wall is not None and wall_score > best_score:
                 best_score = wall_score
                 best_move = ("wall", best_wall)
-
+                print(f"[DEBUG] Meilleur coup trouvé : {best_wall} avec score {best_score}")
         # Appliquer le meilleur coup
+        if best_move is None:
+            # Sélectionne un coup au hasard ou un déplacement simple
+            best_move = ("move", valid_moves[0])
+
         if best_move:
             kind, obj = best_move
+            print(f"[DEBUG] IA choisit le coup : {kind} avec {obj}, score={best_score}")
             if kind == "move":
                 # Utiliser move_pawn pour déplacer et gérer la victoire
                 finished = self.move_pawn(current_player.id, {"x": obj.x, "y": obj.y})
@@ -540,195 +783,236 @@ class QuoridorGame:
     
     
 
-        # #L’IA est très basique (choix aléatoire parmi les coups légaux), on va la modifier plus tard
-    def ai_move_random(self, game_state: GameState):
-        """
-        Une IA simple qui effectue aléatoirement un coup légal.
-        """
-        current_player = next(
-            (p for p in game_state.players if p.id == game_state.current_turn), None)
-        opponent = next(
-            (p for p in game_state.players if p.id != game_state.current_turn), None)
-    
-        legal_moves = []
-    
-        # Obtenir tous les déplacements valides pour le pion
-        valid_pawn_moves = self.get_valid_pawn_moves(current_player, game_state)
-        for move in valid_pawn_moves:
-            legal_moves.append(("move", move))
-    
-        # Ajouter les placements de murs valides
-        if current_player.remaining_walls > 0:
-            for x in range(8):
-                for y in range(8):
-                    for orientation in ["horizontal", "vertical"]:
-                        test_wall = Wall(position=Position(x=x, y=y), orientation=orientation)
-                        if self.is_valid_wall(test_wall):
-                            legal_moves.append(("wall", test_wall))
-    
-        # Si aucun coup légal n'est disponible, lever une exception
-        if not legal_moves:
-            raise Exception("Aucun coup légal trouvé pour l'IA")
-    
-        # Choisir un coup aléatoire parmi les coups légaux
-        move_type, move_value = random.choice(legal_moves)
-        if move_type == "move":
-            if self.move_pawn(current_player.id, move_value.dict()):
-                return # partie est finie 
-        else:
-            self.place_wall(current_player.id, move_value.dict())
+    # def ai_move_random(self, game_state: GameState):
+    #     """
+    #     Une IA simple qui effectue aléatoirement un coup légal.
+    #     """
+    #     idx = game_state.current_turn - 1
+    #     current_player = game_state.players[idx]
+    #     opponent = game_state.players[1 - idx]
 
-    # def ai_move_random(self,gameState):
-
-    #     # Une IA simple qui effectue aléatoirement un coup légal
-    #     current_player = next(
-    #         (p for p in gameState.players if p.id == gameState.current_turn), None)
     #     legal_moves = []
-    #     directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
-    #     for dx, dy in directions:
-    #         new_x = current_player.pawn.x + dx
-    #         new_y = current_player.pawn.y + dy
-    #         new_position = Position(x=new_x, y=new_y)
-    #         if 0 <= new_x < 9 and 0 <= new_y < 9 and self.is_valid_move(
-    #                 current_player, new_position):
-    #             legal_moves.append(("move", new_position))
+    
+    #     # Obtenir tous les déplacements valides pour le pion
+    #     valid_pawn_moves = self.get_valid_pawn_moves(current_player, game_state)
+    #     for move in valid_pawn_moves:
+    #         legal_moves.append(("move", move))
+    
+    #     # Ajouter les placements de murs valides
     #     if current_player.remaining_walls > 0:
-    #         # tester un mur en position fixe
-    #         test_wall = Wall(position=Position(x=3, y=3),
-    #                             orientation="horizontal")
-    #         if self.is_valid_wall(test_wall):
-    #             legal_moves.append(("wall", test_wall))
+    #         for x in range(8):
+    #             for y in range(8):
+    #                 for orientation in ["horizontal", "vertical"]:
+    #                     test_wall = Wall(position=Position(x=x, y=y), orientation=orientation)
+    #                     if self.is_valid_wall(test_wall):
+    #                         legal_moves.append(("wall", test_wall))
+    
+    #     # Si aucun coup légal n'est disponible, lever une exception
     #     if not legal_moves:
-            
     #         raise Exception("Aucun coup légal trouvé pour l'IA")
+    
+    #     # Choisir un coup aléatoire parmi les coups légaux
     #     move_type, move_value = random.choice(legal_moves)
     #     if move_type == "move":
-    #         self.move_pawn(current_player.id, move_value.dict())
+    #         if self.move_pawn(current_player.id, move_value.dict()):
+    #             return # partie est finie 
     #     else:
     #         self.place_wall(current_player.id, move_value.dict())
-
-    def evaluate_pawn_moves(self, player: Player, game_state: GameState) -> Tuple[int, Position]:
+    
+    def ai_move_random(self, game_state: GameState):
         """
-        Évalue tous les déplacements valides du joueur donné (avec A*)
-        et retourne le meilleur déplacement accompagné de son score.
+        IA rapide avec logique simple :
+        - Privilégie les déplacements vers l'avant
+        - Ne pose un mur que si l'adversaire est proche de gagner
+        """
+        import random
+
+        idx = game_state.current_turn - 1
+        current_player = game_state.players[idx]
+        opponent = game_state.players[1 - idx]
+
+        direction = 1 if current_player.id == 1 else -1  # direction vers l’avant
+
+        # 1. Tenter de bloquer si l’adversaire est très proche de la ligne de victoire
+        if current_player.remaining_walls > 0:
+            oy = opponent.pawn.y
+            if (opponent.id == 1 and oy >= 4) or (opponent.id == 2 and oy <= 2):
+                ox = opponent.pawn.x
+                possible_walls = []
+                for dx in [-1, 0, 1]:
+                    for dy in [-1, 0, 1]:
+                        x, y = ox + dx, oy + dy
+                        if 0 <= x < 8 and 0 <= y < 8:
+                            for orientation in ["horizontal", "vertical"]:
+                                wall = Wall(position=Position(x=x, y=y), orientation=orientation)
+                                if self.is_valid_wall(wall):
+                                    possible_walls.append(wall)
+                if possible_walls:
+                    chosen_wall = random.choice(possible_walls)
+                    self.place_wall(current_player.id, chosen_wall.dict())
+                    return  
+
+        # 2. Sinon, se déplacer (privilégier l’avant)
+        valid_moves = self.get_valid_pawn_moves(current_player, game_state)
+        forward_moves = []
+        other_moves = []
+
+        for move in valid_moves:
+            if (move.y - current_player.pawn.y) == direction:
+                forward_moves.append(move)
+            else:
+                other_moves.append(move)
+
+        if forward_moves:
+            move = random.choice(forward_moves)
+        elif other_moves:
+            move = random.choice(other_moves)
+        else:
+            raise Exception("Aucun déplacement possible")
+
+        self.move_pawn(current_player.id, move.dict())
+        return  
+
+    # def ai_move_random(self, game_state: GameState):
+    #     """
+    #     IA améliorée rapide avec Monte Carlo :
+    #     - Évalue quelques coups autour du pion adverse
+    #     - Choisit le coup avec le meilleur score estimé
+    #     """
+    #     import random
+
+    #     idx = game_state.current_turn - 1
+    #     current_player = game_state.players[idx]
+    #     opponent = game_state.players[1 - idx]
+
+    #     best_score = -1
+    #     best_action = None
+
+    #     # 1. Déplacements possibles
+    #     for move in self.get_valid_pawn_moves(current_player, game_state):
+    #         self.save_state()
+    #         self.move_pawn(current_player.id, move.dict())
+    #         score = self.monte_carlo_evaluation(simulations=3)
+    #         self.load_state()
+    #         if score > best_score:
+    #             best_score = score
+    #             best_action = ("move", move)
+    #             if score == 1.0:
+    #                 break  # score parfait → pas besoin d'évaluer plus
+
+    #     # 2. Murs (si murs restants et adversaire proche)
+    #     if best_score < 1.0 and current_player.remaining_walls > 0:
+    #         ox, oy = opponent.pawn.x, opponent.pawn.y
+    #         for dx in [-1, 0, 1]:
+    #             for dy in [-1, 0, 1]:
+    #                 x, y = ox + dx, oy + dy
+    #                 if 0 <= x < 8 and 0 <= y < 8:
+    #                     for orientation in ["horizontal", "vertical"]:
+    #                         wall = Wall(position=Position(x, y), orientation=orientation)
+    #                         if self.is_valid_wall(wall):
+    #                             self.save_state()
+    #                             if self.place_wall(current_player.id, wall.dict()):
+    #                                 score = self.monte_carlo_evaluation(simulations=3)
+    #                                 self.load_state()
+    #                                 if score > best_score:
+    #                                     best_score = score
+    #                                     best_action = ("wall", wall)
+    #                                     if score == 1.0:
+    #                                         break
+
+    #     # Exécuter le meilleur coup
+    #     if best_action:
+    #         move_type, move_value = best_action
+    #         if move_type == "move":
+    #             self.move_pawn(current_player.id, move_value.dict())
+    #         else:
+    #             self.place_wall(current_player.id, move_value.dict())
+    #     else:
+    #         raise Exception("Aucun coup légal trouvé")
+
+    # def evaluate_pawn_moves(self, player: Player, game_state: GameState) -> Tuple[int, Position]:
+    #     """
+    #     Évalue tous les déplacements valides du joueur donné (avec A*)
+    #     et retourne le meilleur déplacement accompagné de son score.
+    #     """
+    #     best_score = float("-inf")
+    #     best_position = None
+
+    #     valid_moves = self.get_valid_pawn_moves(player, game_state)
+
+    #     for move in valid_moves:
+    #         # Créer un faux joueur pour ne pas modifier l'état réel
+    #         simulated_player = Player(
+    #             id=player.id,
+    #             pawn=move,
+    #             remaining_walls=player.remaining_walls
+    #         )
+
+    #         path_len = self.a_star(simulated_player, game_state)
+
+    #         if math.isinf(path_len):
+    #             continue  # ce coup mène à une impasse
+
+    #         score = max(0, 100 - path_len)  # plus le chemin est court, mieux c'est
+
+    #         if score > best_score:
+    #             best_score = score
+    #             best_position = move
+
+    #     return best_score, best_position
+    def evaluate_pawn_moves(self, player: Player, game_state: GameState) -> Tuple[float, Position]:
+        """
+        Évalue les déplacements valides du joueur en priorisant les plus courts
+        et les plus "en avant" vers la ligne d'arrivée.
         """
         best_score = float("-inf")
         best_position = None
-
         valid_moves = self.get_valid_pawn_moves(player, game_state)
 
         for move in valid_moves:
-            # Créer un faux joueur pour ne pas modifier l'état réel
             simulated_player = Player(
                 id=player.id,
                 pawn=move,
                 remaining_walls=player.remaining_walls
             )
-
             path_len = self.a_star(simulated_player, game_state)
-
             if math.isinf(path_len):
-                continue  # ce coup mène à une impasse
+                continue
 
-            score = max(0, 100 - path_len)  # plus le chemin est court, mieux c'est
+            # Encourager les mouvements vers l'avant
+            # forward_progress = (move.y - player.pawn.y) if player.id == 1 else (player.pawn.y - move.y)
+            # score = (100 - path_len) + 0.5 * forward_progress
+            # Normaliser le score pour qu'il soit entre 0 et 1
+            score = 1 - (path_len / 100)
 
             if score > best_score:
                 best_score = score
                 best_position = move
 
-        return best_score, best_position
-
-
-    # # Méthode pour obtenir les mouvements valides du pion
-    # def get_valid_pawn_moves(self, player: Player, opponent: Player, game_state: GameState) -> List[Position]:
-    #     moves = []
-    #     px, py = player.pawn.x, player.pawn.y
-    #     ox, oy = opponent.pawn.x, opponent.pawn.y
-
-    #     directions = [(0, -1), (1, 0), (0, 1), (-1, 0)]  # haut, droite, bas, gauche
-
-    #     for dx, dy in directions:
-    #         nx, ny = px + dx, py + dy
-    #         next_pos = Position(x=nx, y=ny)
-
-    #         # Si le déplacement vers cette position n'est pas valide, on ignore
-    #         if not self.is_valid_move(player, next_pos):
-    #             continue
-
-    #         # Si l'adversaire est sur cette case
-    #         if (nx, ny) == (ox, oy):
-    #             jx, jy = ox + dx, oy + dy  # position derrière l’adversaire
-    #             jump_pos = Position(jx, jy)
-
-    #             # Vérifier s’il est possible de sauter directement par-dessus l’adversaire
-    #             if self.is_valid_move(player, jump_pos, game_state):
-    #                 moves.append(jump_pos)
-    #             else:
-    #                 # Sinon, tenter les sauts en diagonale
-    #                 if dx == 0:  # mouvement vertical
-    #                     for side in [-1, 1]:
-    #                         diag_pos = Position(ox + side, oy)
-    #                         if self.is_valid_move(player, diag_pos, game_state):
-    #                             moves.append(diag_pos)
-    #                 elif dy == 0:  # mouvement horizontal
-    #                     for side in [-1, 1]:
-    #                         diag_pos = Position(ox, oy + side)
-    #                         if self.is_valid_move(player, diag_pos, game_state):
-    #                             moves.append(diag_pos)
-    #         else:
-    #             # Déplacement normal
-    #             moves.append(next_pos)
-
-    #     return moves
-
-    # def get_valid_pawn_moves(self, player: Player, opponent: Player, game_state: GameState) -> List[Position]:
-    #     moves = []
-    #     px, py = player.pawn.x, player.pawn.y
-    #     directions = [(0, -1), (1, 0), (0, 1), (-1, 0)]  # haut, droite, bas, gauche
-
-    #     for dx, dy in directions:
-    #         nx, ny = px + dx, py + dy
-    #         next_pos = Position(x=nx, y=ny)
-
-    #         # 1. Si la position est vide et atteignable (mouvement normal)
-    #         if self.is_valid_move(player, next_pos):
-    #             # Si cette case ne contient pas l’adversaire, c’est un mouvement normal valide
-    #             if (nx, ny) != (opponent.pawn.x, opponent.pawn.y):
-    #                 moves.append(next_pos)
-    #             else:
-    #                 # 2. Si l’adversaire est là, tester les mouvements face-à-face
-    #                 # tester les sauts directs ou diagonaux
-    #                 for ddx in [-2, -1, 0, 1, 2]:
-    #                     for ddy in [-2, -1, 0, 1, 2]:
-    #                         if abs(ddx) + abs(ddy) == 2:  # éviter diagonale pure (1,1)
-    #                             face_to_face_target = Position(px + ddx, py + ddy)
-    #                             if self.is_valid_face_to_face_move(player, face_to_face_target):
-    #                                 moves.append(face_to_face_target)
-    #     return moves
+        return best_score, best_position ,valid_moves
 
     def get_valid_pawn_moves(self, player: Player, game_state: GameState) -> List[Position]:
         """
-        Retourne tous les mouvements valides du pion (y compris les sauts droits et diagonaux)
-        selon les règles officielles de Quoridor, pour 2 ou 4 joueurs.
-        Cette version utilise uniquement `game_state` (utile en simulation).
+        Retourne tous les mouvements valides du pion pour un jeu à 2 joueurs uniquement.
+        Inclut les sauts et les diagonales selon les règles officielles de Quoridor.
         """
         moves = []
         px, py = player.pawn.x, player.pawn.y
         directions = [(0, -1), (1, 0), (0, 1), (-1, 0)]  # haut, droite, bas, gauche
-        opponents = [p for p in game_state.players if p.id != player.id]
+
+        # Adversaire unique (2 joueurs)
+        opponent = game_state.players[1 - (player.id - 1)]
 
         # ajouter wall_blocks_in_simulation car wall_blocks_move dépend de self.players, ni de self.walls
-        def wall_blocks_in_simulation(from_pos: Position, to_pos: Position) -> bool:
+        def wall_blocks(from_pos: Position, to_pos: Position) -> bool:
             for wall in game_state.walls:
                 if wall.orientation == "horizontal":
                     if from_pos.x == to_pos.x:
-                        min_y = min(from_pos.y, to_pos.y)
-                        if wall.position.y == min_y and wall.position.x <= from_pos.x < wall.position.x + 2:
+                        if wall.position.y == min(from_pos.y, to_pos.y) and wall.position.x <= from_pos.x < wall.position.x + 2:
                             return True
                 elif wall.orientation == "vertical":
                     if from_pos.y == to_pos.y:
-                        min_x = min(from_pos.x, to_pos.x)
-                        if wall.position.x == min_x and wall.position.y <= from_pos.y < wall.position.y + 2:
+                        if wall.position.x == min(from_pos.x, to_pos.x) and wall.position.y <= from_pos.y < wall.position.y + 2:
                             return True
             return False
 
@@ -738,60 +1022,107 @@ class QuoridorGame:
 
             if not (0 <= nx < 9 and 0 <= ny < 9):
                 continue
-            if wall_blocks_in_simulation(Position(x=px, y=py), neighbor):
+            if wall_blocks(Position(x=px, y=py), neighbor):
                 continue
 
-            opponent_on_neighbor = next((opp for opp in opponents if opp.pawn.x == nx and opp.pawn.y == ny), None)
-
-            if opponent_on_neighbor:
-                # Tentative de saut droit
+            if opponent.pawn.x == nx and opponent.pawn.y == ny:
+                # Saut en ligne droite
                 jump_x, jump_y = nx + dx, ny + dy
                 jump_pos = Position(x=jump_x, y=jump_y)
                 if (0 <= jump_x < 9 and 0 <= jump_y < 9 and
-                    not wall_blocks_in_simulation(Position(x=nx, y=ny), jump_pos) and
-                    not any(opp.pawn.x == jump_x and opp.pawn.y == jump_y for opp in opponents)):
+                    not wall_blocks(Position(x=nx, y=ny), jump_pos) and
+                    (jump_pos != player.pawn and jump_pos != opponent.pawn)):
                     moves.append(jump_pos)
-                    continue  # Saut direct possible, on ne regarde pas les diagonales
-                
-                # Sinon diagonales
-
-                if dx == 0:  # adversaire en haut/bas → tenter gauche/droite
+                    continue
+                # Saut en diagonale
+                #elif wall_blocks(Position(x=nx, y=ny), jump_pos):
+                # Mur bloque → diagonale autorisée
+                # Saut en diagonale
+                if dx == 0:  # adversaire en haut/bas donc tester gauche/droite
                     for side_dx in [-1, 1]:
-                        diag_pos = Position(x=nx + side_dx, y=ny)
-                        if not (0 <= diag_pos.x < 9 and 0 <= diag_pos.y < 9):
-                            continue
-                        if not wall_blocks_in_simulation(Position(x=nx, y=ny), diag_pos):
-                            if not any(p.pawn == diag_pos for p in game_state.players):
-                                moves.append(diag_pos)
-                elif dy == 0:  # adversaire à gauche/droite → tenter haut/bas
+                        diag = Position(x=nx + side_dx, y=ny)
+                        if 0 <= diag.x < 9 and not wall_blocks(Position(x=nx, y=ny), diag):
+                            moves.append(diag)
+                elif dy == 0:  # adversaire à gauche/droite donc tester haut/bas
                     for side_dy in [-1, 1]:
-                        diag_pos = Position(x=nx, y=ny + side_dy)
-                        if not (0 <= diag_pos.x < 9 and 0 <= diag_pos.y < 9):
-                            continue
-                        if not wall_blocks_in_simulation(Position(x=nx, y=ny), diag_pos):
-                            if not any(p.pawn == diag_pos for p in game_state.players):
-                                moves.append(diag_pos)
+                        diag = Position(x=nx, y=ny + side_dy)
+                        if 0 <= diag.y < 9 and not wall_blocks(Position(x=nx, y=ny), diag):
+                            moves.append(diag)
             else:
                 # Déplacement simple
-                if not any(p.pawn == neighbor for p in game_state.players):
+                if neighbor != opponent.pawn:
                     moves.append(neighbor)
 
         return moves
+
+    # def evaluate_best_wall_placement(
+    #         self, player: Player, opponent: Player,
+    #         game_state: GameState) -> Tuple[int, Optional[Wall]]:
+    #     best_score = float("-inf")
+    #     best_wall = None
+
+    #     # On travaille sur une copie de l'état pour ne pas polluer l'état réel
+    #     base_walls = copy.deepcopy(game_state.walls)
+
+    #     for x in range(8):  # les murs ne peuvent être posés qu’entre 0 et 7
+    #         for y in range(8):
+    #             for orientation in ["horizontal", "vertical"]:
+    #                 wall = Wall(position=Position(x=x, y=y), orientation=orientation)
+
+    #                 # Simuler les murs temporairement
+    #                 simulated_walls = base_walls + [wall]
+    #                 simulated_game_state = GameState(
+    #                     board=game_state.board,
+    #                     players=game_state.players,
+    #                     walls=simulated_walls,
+    #                     current_turn=game_state.current_turn,
+    #                     game_over=game_state.game_over,
+    #                     winner_id=game_state.winner_id,
+    #                 )
+
+    #                 # Vérifier si ce mur est valide dans la simulation
+    #                 if not self.is_valid_wall(wall, walls=game_state.walls):
+    #                     continue
+
+    #                 # Vérifier si ce mur bloque complètement un joueur
+    #                 if not self.has_path(player.pawn, player.id, simulated_game_state) or not self.has_path(opponent.pawn, opponent.id, simulated_game_state):
+    #                     continue
+
+    #                 # Évaluer les longueurs de chemin
+    #                 my_path_len = self.a_star(player, simulated_game_state)
+    #                 opp_path_len = self.a_star(opponent, simulated_game_state)
+
+    #                 # Heuristique : on veut ralentir l'adversaire plus qu'on ne se ralentit
+    #                 score = max(0, 100 - opp_path_len) - 0.5 * max(0, 100 - my_path_len)
+
+    #                 if score > best_score:
+    #                     best_score = score
+    #                     best_wall = wall
+
+    #     return best_score, best_wall
     def evaluate_best_wall_placement(
-            self, player: Player, opponent: Player,
-            game_state: GameState) -> Tuple[int, Optional[Wall]]:
+        self, player: Player, opponent: Player, game_state: GameState
+    ) -> Tuple[float, Optional[Wall]]:
         best_score = float("-inf")
         best_wall = None
 
-        # On travaille sur une copie de l'état pour ne pas polluer l'état réel
         base_walls = copy.deepcopy(game_state.walls)
+        original_opp_path = self.a_star(opponent, game_state)
+        original_my_path = self.a_star(player, game_state)
 
-        for x in range(8):  # les murs ne peuvent être posés qu’entre 0 et 7
+        tested_walls = 0
+        valid_walls = 0
+
+        for x in range(8):
             for y in range(8):
                 for orientation in ["horizontal", "vertical"]:
+                    tested_walls += 1
                     wall = Wall(position=Position(x=x, y=y), orientation=orientation)
 
-                    # Simuler les murs temporairement
+                    if not self.is_valid_wall(wall, walls=base_walls):
+                        continue
+                    valid_walls += 1
+
                     simulated_walls = base_walls + [wall]
                     simulated_game_state = GameState(
                         board=game_state.board,
@@ -802,109 +1133,96 @@ class QuoridorGame:
                         winner_id=game_state.winner_id,
                     )
 
-                    # Vérifier si ce mur est valide dans la simulation
-                    if not self.is_valid_wall(wall, walls=game_state.walls):
+                    if not self.has_path(player.pawn, player.id, simulated_game_state) or \
+                    not self.has_path(opponent.pawn, opponent.id, simulated_game_state):
                         continue
 
-                    # Vérifier si ce mur bloque complètement un joueur
-                    if not self.has_path(player.pawn, player.id, simulated_game_state) or not self.has_path(opponent.pawn, opponent.id, simulated_game_state):
-                        continue
+                    new_opp_path = self.a_star(opponent, simulated_game_state)
+                    new_my_path = self.a_star(player, simulated_game_state)
 
-                    # Évaluer les longueurs de chemin
-                    my_path_len = self.a_star(player, simulated_game_state)
-                    opp_path_len = self.a_star(opponent, simulated_game_state)
+                    delta_opp = new_opp_path - original_opp_path
+                    delta_me = new_my_path - original_my_path
 
-                    # Heuristique : on veut ralentir l'adversaire plus qu'on ne se ralentit
-                    score = max(0, 100 - opp_path_len) - 0.5 * max(0, 100 - my_path_len)
+                    # Panic mode : adversaire proche de gagner
+                    if original_opp_path <= 4:
+                        delta_opp *= 3.0  # mode panique fort
+                        raw_score = 2.5 * delta_opp - 1.0 * delta_me + 2.0
+                    elif delta_opp > 0:
+                        raw_score = 2.0 * delta_opp - 1.0 * delta_me + 1.0
+                    else:
+                        raw_score = -999  # mur inutile
 
-                    if score > best_score:
-                        best_score = score
+                    print(f"[DEBUG] Mur testé : ({x},{y},{orientation}) deltaopp={delta_opp}, Δme={delta_me}, score={raw_score:.3f}")
+
+                    if raw_score > best_score:
+                        best_score = raw_score
                         best_wall = wall
 
-        return best_score, best_wall
+        print(f"[DEBUG] Total murs testés : {tested_walls}, valides : {valid_walls}")
+        
+        if best_wall is None:
+            print("[DEBUG] Aucun mur utile trouvé.")
+            return 0, None
 
-    # Méthode A*
+        final_score = 1 / (1 + math.exp(-best_score / 2))
+        print(f"[DEBUG] MUR coup trouvé : {best_wall} avec score {final_score:.3f}")
+        return final_score, best_wall
 
 
-    # def a_star(self, player: Player, game_state: GameState) -> int:
-    #     """Implémentation de l’A* pour trouver le chemin le plus court."""
-    #     start = (player.pawn.x, player.pawn.y)
-    #     goal_row = 0 if player.id == 2 else 8
-
-    #     open_set = []  # file de prioritée contenant les positions à explorer ordonnées par le score total
-    #     heapq.heappush(
-    #         open_set,
-    #         (0 + self.heuristic(start, goal_row), 0, start
-    #         ))  # chaque élément est un tuple (score_total, coût_actuel, position)
-    #     #score_total = coût actuel + heuristique (estimation de la distance restante).
-    #     visited = set()
-
-    #     while open_set:
-    #         _, cost, current = heapq.heappop(
-    #             open_set
-    #         )  #On retire la position ayant le plus petit score total (priorité la plus haute)
-    #         x, y = current
-
-    #         if y == goal_row:
-    #             return cost
-
-    #         if current in visited:
-    #             continue
-    #         visited.add(current)
-
-    #         for dx, dy in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
-    #             nx, ny = x + dx, y + dy
-    #             if 0 <= nx < 9 and 0 <= ny < 9:
-    #                 new_pos = Position(x=nx, y=ny)
-    #                 fake_player = Player(id=player.id, pawn=new_pos,
-    #                                     remaining_walls=player.remaining_walls)
-    #                 if self.is_valid_move(fake_player, new_pos):
-    #                     heapq.heappush(open_set, (cost + 1 + self.heuristic(
-    #                         (nx, ny), goal_row), cost + 1, (nx, ny)))
-    #                     #self.print_board()
-    #                     #print(f"Déplacement Valide de {current} vers {new_pos}")
-
-    #                 #else:
-    #                     #print(f"Déplacement invalide de {current} vers {new_pos}")
-    #                     #self.print_board()
-    #     #print(f"Aucun chemin trouvé pour le joueur {player.id} depuis {start}")
-    #     #self.print_board()
-    #     return float("inf")
 
     def a_star(self, player: Player, game_state: GameState) -> int:
-        """Implémentation de l’A* pour trouver le chemin le plus court."""
+        """
+        Implémentation de l'algorithme A* pour trouver le chemin le plus court
+        du joueur player vers la ligne d'arrivée (ligne 0 ou ligne 8).
+        Retourne le nombre minimal de déplacements nécessaires.
+
+        Cette version est optimisée pour 2 joueurs.
+        """
+
+        # Position de départ du pion
         start = (player.pawn.x, player.pawn.y)
-        goal_y = 0 if player.id == 2 else 8
+
+        if player.id == 1:
+            goal_y = 8  # joueur 1 commence en haut, doit aller en bas
+        elif player.id == 2:
+            goal_y = 0  # joueur 2 commence en bas, doit aller en haut
+        else:
+            raise ValueError("Joueur inconnu")
+
+
+        # Ensemble des cases déjà visitées
         visited = set()
+
+        # File de priorité : chaque élément est (score_total, coût_actuel, position)
+        # score_total = coût_actuel + estimation heuristique jusqu'à l'arrivée
         open_set = []
         heapq.heappush(open_set, (self.heuristic(start, goal_y), 0, start))
 
         while open_set:
             _, cost, (cx, cy) = heapq.heappop(open_set)
 
+            # Ne pas revisiter une case déjà explorée
             if (cx, cy) in visited:
                 continue
             visited.add((cx, cy))
 
+            # Si on atteint la ligne d'arrivée, on retourne le coût total (nombre de pas)
             if cy == goal_y:
                 return cost
 
-            # Créer un fake player pour obtenir les moves possibles depuis (cx, cy)
+            # Simule un joueur temporaire placé sur cette case pour calculer ses mouvements valides
             simulated_player = Player(id=player.id, pawn=Position(x=cx, y=cy), remaining_walls=player.remaining_walls)
             neighbors = self.get_valid_pawn_moves(simulated_player, game_state)
 
             for pos in neighbors:
                 if (pos.x, pos.y) not in visited:
-                    heapq.heappush(
-                        open_set,
-                        (
-                            cost + 1 + self.heuristic((pos.x, pos.y), goal_y),
-                            cost + 1,
-                            (pos.x, pos.y)
-                        )
-                    )
+                    # Calcul du score : coût + 1 + estimation de la distance restante
+                    score = cost + 1 + self.heuristic((pos.x, pos.y), goal_y)
+                    heapq.heappush(open_set, (score, cost + 1, (pos.x, pos.y)))
 
+        # Si aucun chemin trouvé (rare)
         return float("inf")
+
 
 
     # Foction d'estimation de la distance restante
@@ -1135,238 +1453,66 @@ class QuoridorGame:
                     wall_line += " "
                 print(wall_line)
 
+
+    def print_board_from_state(self, state: GameState):
+        size = 9
+        wall_map = {(w.position.x, w.position.y, w.orientation): True for w in state.walls}
+
+        for y in range(size):
+            # Ligne de pions
+            row = ""
+            for x in range(size):
+                player_here = next((p.id for p in state.players if p.pawn.x == x and p.pawn.y == y), None)
+                cell = str(player_here) if player_here else "."
+                row += f" {cell} "
+                row += "|" if wall_map.get((x, y, "vertical")) else " "
+            print(row)
+
+            # Ligne de murs horizontaux
+            wall_row = ""
+            for x in range(size):
+                wall_row += "===" if wall_map.get((x, y, "horizontal")) else "   "
+                wall_row += " "
+            print(wall_row)
+
     def evaluate_state_2(self) -> float:
         """
-        Évalue l'état actuel du jeu.
-        Utilise Monte Carlo pour une évaluation plus précise.
+        Évalue l'état actuel du jeu via des simulations Monte Carlo.
         """
-        return self.monte_carlo_evaluation(simulations=10)
-    
-    def monte_carlo_evaluation(self, simulations: int = 10) -> float:
+        return self.monte_carlo_evaluation(simulations=5)
+
+    def monte_carlo_evaluation(self, simulations: int = 1) -> float:
         """
-        Évalue un état de jeu en simulant plusieurs parties aléatoires.
-        :param simulations: Nombre de simulations à effectuer.
-        :return: Score basé sur les résultats des simulations.
+        Évalue un état de jeu en simulant plusieurs parties avec l’IA aléatoire.
+        :param simulations: Nombre de parties simulées.
+        :return: Score (entre 0 et 1) basé sur le taux de victoire du joueur courant.
         """
-        current_player_id = self.current_turn
+        initial_player_id = self.current_turn
         wins = 0
 
         for _ in range(simulations):
-            # Sauvegarder l'état actuel
+            # Sauvegarder l’état de départ
             snapshot = self.save_state()
 
-            # Simuler une partie aléatoire jusqu'à la fin
-            while not self.game_over:
-                current_player = self.current_turn
-                self.ai_move_random(self.get_game_state())
+            # Simuler la partie
+            try:
+                while not self.game_over:
+                    game_state = self.get_game_state()
+                    self.ai_move_random(game_state)
+            except Exception:
+                # Si une erreur survient (ex: aucun coup possible), on arrête la simulation
+                pass
 
-            # Vérifier si le joueur courant a gagné
-            if self.winner_id == current_player_id:
+            # Comptabiliser la victoire si le joueur courant gagne
+            if self.winner_id == initial_player_id:
                 wins += 1
-            if simulations == 49:
-                print(" 49")
-            # Restaurer l'état initial
+
+            # Restaurer l’état initial pour la prochaine simulation
             self.load_state(snapshot)
 
-        # Retourner un score basé sur le pourcentage de victoires
+        # Score final : proportion de victoires sur toutes les simulations
         return wins / simulations
 
 
 
 
-
-
-
-
-
-
-# Méthodes pour évaluation de l'ia entre elles
-
-# def simulate_game_between_ais(difficulty_p1="easy",
-#                               difficulty_p2="hard",
-#                               verbose=True,
-#                               nb_games=100):
-#     """
-#     Simule nb_games parties entre deux IA.
-#     difficulty_p1 : niveau de l'IA 1 ('easy' ou 'hard')
-#     difficulty_p2 : niveau de l'IA 2 ('easy' ou 'hard')
-#     """
-#     wins_p1 = 0
-#     wins_p2 = 0
-
-#     for i in range(nb_games):
-#         game = QuoridorGame()
-#         max_turns = 200
-#         turn_count = 0
-
-#         while not game.game_over and turn_count < max_turns:
-#             current_player_id = game.current_turn
-#             if current_player_id == 1:
-#                 play_ai_turn(game, 1, difficulty=difficulty_p1)
-#             else:
-#                 play_ai_turn(game, 2, difficulty=difficulty_p2)
-
-#             if verbose:
-#                 print(
-#                     f"Partie {i+1} - Tour {turn_count + 1} : Joueur {current_player_id} a joué."
-#                 )
-#                 self.print_board(game)
-
-#             turn_count += 1
-
-#         winner = game.winner_id
-#         if winner == 1:
-#             wins_p1 += 1
-#         elif winner == 2:
-#             wins_p2 += 1
-
-#         if verbose:
-#             print(
-#                 f"Fin de la partie {i+1} en {turn_count} tours. Gagnant : Joueur {winner}"
-#             )
-#             print("-" * 40)
-
-#     # Affichage du pourcentage
-#     print(f"\nAprès {nb_games} parties :")
-#     print(
-#         f"IA 1 ({difficulty_p1}) : {wins_p1} victoires ({(wins_p1 / nb_games) * 100:.1f}%)"
-#     )
-#     print(
-#         f"IA 2 ({difficulty_p2}) : {wins_p2} victoires ({(wins_p2 / nb_games) * 100:.1f}%)"
-#     )
-#     print(
-#         f"Matchs nuls : {nb_games - wins_p1 - wins_p2} ({((nb_games - wins_p1 - wins_p2) / nb_games) * 100:.1f}%)"
-#     )
-
-
-
-
-# import time
-
-# def simulate_game_with_timing(difficulty_p1="easy", difficulty_p2="hard", nb_games=100):
-#     total_time_p1 = 0.0
-#     total_time_p2 = 0.0
-#     total_moves_p1 = 0
-#     total_moves_p2 = 0
-#     total_game_time = 0.0
-
-#     for i in range(nb_games):
-#         game = QuoridorGame()
-#         start_game_time = time.perf_counter()
-#         while not game.game_over:
-#             current_player = game.current_turn
-#             start_move_time = time.perf_counter()
-#             if current_player == 1:
-#                 play_ai_turn(game, 1, difficulty=difficulty_p1)
-#                 total_time_p1 += time.perf_counter() - start_move_time
-#                 total_moves_p1 += 1
-#             else:
-#                 play_ai_turn(game, 2, difficulty=difficulty_p2)
-#                 total_time_p2 += time.perf_counter() - start_move_time
-#                 total_moves_p2 += 1
-#         total_game_time += time.perf_counter() - start_game_time
-
-#     avg_time_per_game = total_game_time / nb_games
-#     avg_time_per_move_p1 = total_time_p1 / total_moves_p1 if total_moves_p1 else 0
-#     avg_time_per_move_p2 = total_time_p2 / total_moves_p2 if total_moves_p2 else 0
-
-#     print(f"Durée moyenne par partie : {avg_time_per_game:.3f} secondes")
-#     print(f"IA 1 ({difficulty_p1}) - Temps moyen par coup : {avg_time_per_move_p1:.3f} secondes")
-#     print(f"IA 2 ({difficulty_p2}) - Temps moyen par coup : {avg_time_per_move_p2:.3f} secondes")
-
-
-
-    #__________________________________________________________________
-
-    # def ai_move_pawn(self):
-    #     """ Méthode de déplacement d'IA """
-    #     # Récupérer la position actuelle du pion de l'IA
-    #     curr_row, curr_col = self.player_positions[2]
-
-    #     possible_moves = []
-
-    #     # Déplacements adjacents haut,bas,gauche,droite
-    #     for dr, dc in [(1, 0), (0, -1), (0, 1), (-1, 0)]:
-    #         new_row, new_col = curr_row + dr, curr_col + dc
-
-    #         if 0 <= new_row < self.board_size and 0 <= new_col < self.board_size:
-    #             if self.is_valid_pawn_move(curr_row, curr_col, new_row, new_col):
-    #                 score = new_row  # Plus la ligne est grande, plus le score est élevé
-    #                 possible_moves.append((score, new_row, new_col))
-
-    #     # sauts par-dessus l'adversaire
-    #     opponent_row, opponent_col = self.player_positions[1]
-    #     if abs(opponent_row - curr_row) == 1 and abs(opponent_col - curr_col) == 0:
-    #         # Le pion est en haut ou en bas
-    #         jump_row = curr_row + 2 * (opponent_row - curr_row)
-    #         if 0 <= jump_row < self.board_size:
-    #             if self.is_valid_pawn_move(curr_row, curr_col, jump_row, opponent_col):
-    #                 score = jump_row
-    #                 possible_moves.append((score, jump_row, opponent_col))
-    #     elif abs(opponent_row - curr_row) == 0 and abs(opponent_col - curr_col) == 1:
-    #         # Le pion est à gauche ou à droite
-    #         jump_col = curr_col + 2 * (opponent_col - curr_col)
-    #         if 0 <= jump_col < self.board_size:
-    #             if self.is_valid_pawn_move(curr_row, curr_col, opponent_row, jump_col):
-    #                 score = curr_row
-    #                 possible_moves.append((score, opponent_row, jump_col))
-
-    #     # Sort desc
-    #     possible_moves.sort(reverse=True)
-
-    #     if possible_moves:
-    #         # Le premier element a le score le plus haut
-    #         _, best_row, best_col = possible_moves[0]
-    #         return self.move_pawn(best_row, best_col)
-    #     else:
-    #         return False
-
-    # def ia_evaluate_wall_placement(self, row, col, orientation):
-    #     """ Évalue le score du placement d'un mur pour l'IA """
-
-    #     player1_path_length_before = self.calculate_shortest_path_length(1)
-
-    #     # Placer temporairement le mur
-    #     if orientation == 'h':
-    #         self.orientation = 1
-    #     else:
-    #         self.vertical_walls[row][col] = 1
-
-    #     # Calculer la longueur du chemin après placement du mur
-    #     player1_path_length_after = self.calculate_shortest_path_length(1)
-
-    #     # Retirer le mur temporaire
-    #     if orientation == 'h':
-    #         self.horizontal_walls[row][col] = 0
-    #     else:
-    #         self.vertical_walls[row][col] = 0
-
-    #     # Calculer le score basé sur la différence de longueur du chemin avant et après
-    #     return player1_path_length_after - player1_path_length_before
-
-
-    # La méthode ne prend pas en compte les saut en diag
-    # def evaluate_pawn_moves_before(self, player: Player, game_state: GameState) -> Tuple[int, Position]:
-    #     """Évalue tous les déplacements possibles avec A*  et retourne le meilleur."""
-    #     best_score = float("-inf")
-    #     best_position = None
-
-    #     for dx, dy in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
-    #         new_x = player.pawn.x + dx
-    #         new_y = player.pawn.y + dy
-    #         pos = Position(new_x, new_y) # creation de la nouvelle position
-    #         if 0 <= new_x < 9 and 0 <= new_y < 9 and self.is_valid_move(player, pos, game_state):
-    #             old_pos = player.pawn
-    #             player.pawn = pos
-    #             path_len = self.a_star(player, game_state)
-    #             player.pawn = old_pos # On remet le pion à sa position initiale
-
-    #             score = (9 - new_y if player.id == 2 else new_y) * 10 - path_len * 5
-
-    #             if score > best_score:
-    #                 best_score = score
-    #                 best_position = pos
-
-    #     return best_score, best_position
-
-    # Méthodes utilitaires pour ai_move_hard
