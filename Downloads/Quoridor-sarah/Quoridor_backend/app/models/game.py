@@ -818,6 +818,7 @@ class QuoridorGame:
     #             return # partie est finie 
     #     else:
     #         self.place_wall(current_player.id, move_value.dict())
+    
     def ai_move_random(self, game_state: GameState):
         """
         IA rapide avec logique simple :
@@ -979,8 +980,8 @@ class QuoridorGame:
                 continue
 
             # Encourager les mouvements vers l'avant
-            forward_progress = (move.y - player.pawn.y) if player.id == 1 else (player.pawn.y - move.y)
-            score = (100 - path_len) + 0.5 * forward_progress
+            # forward_progress = (move.y - player.pawn.y) if player.id == 1 else (player.pawn.y - move.y)
+            # score = (100 - path_len) + 0.5 * forward_progress
             # Normaliser le score pour qu'il soit entre 0 et 1
             score = 1 - (path_len / 100)
 
