@@ -21,10 +21,7 @@ from app.services.quoridor_service import game_service
 
 from app.controllers import (
     game_controller,
-    websocket_controller,
-    multigame_controller,
-    multigame_moves_controller,
-    multigame_websocket_controller,
+    websocket_controller
 )
 
 # ─── Configuration de base du logging ────────────────────────────────────────
@@ -163,14 +160,11 @@ def show_valid_moves(request_data: PlayerIDRequest):
 async def read_rules(request: Request):
     return templates.TemplateResponse("rules.html", {"request": request})
 
-# ─── Routes pour l'ancien mode de jeu ──────────────────────────────────────
+# ─── Routes pour le mode de jeu ──────────────────────────────────────
 app.include_router(game_controller.router, prefix="/api")
 app.include_router(websocket_controller.router)
 
-# ─── Routes pour le mode multijoueur ───────────────────────────────────────
-app.include_router(multigame_controller.router, prefix="/api")
-app.include_router(multigame_moves_controller.router, prefix="/api")
-app.include_router(multigame_websocket_controller.router)
+
 
 # ─── Démarrage de l'application ────────────────────────────────────────────
 logger.info("Application Quoridor démarrée")

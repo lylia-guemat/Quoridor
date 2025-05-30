@@ -254,253 +254,9 @@ class QuoridorGame:
                 return True
         return False
     
-    def is_valid_wall_new(self, wall: Wall, walls: Optional[List[Wall]] = None) -> bool:
-        walls = walls if walls is not None else self.walls
-
-        if wall.orientation not in ["horizontal", "vertical"]:
-            return False
-
-        # Le mur de référence doit être dans les bornes de la grille 9x9
-        if not (0 <= wall.position.x < 8 and 0 <= wall.position.y < 8):
-            return False
-
-        # Empêche les murs qui sortiraient de la grille
-        if wall.orientation == "horizontal" and wall.position.x >= 8 - 1:
-            return False
-        if wall.orientation == "vertical" and wall.position.y >= 8 - 1:
-            return False
-
-        # Vérifier superposition exacte
-        for w in walls:
-            if wall.position == w.position and wall.orientation == w.orientation:
-                return False
-
-        # Vérifier croisement interdit (croix)
-        for w in walls:
-            if wall.orientation == "horizontal" and w.orientation == "vertical":
-                if (w.position.x == wall.position.x or w.position.x == wall.position.x + 1) and \
-                (w.position.y == wall.position.y or w.position.y == wall.position.y + 1):
-                    return False
-            if wall.orientation == "vertical" and w.orientation == "horizontal":
-                if (w.position.y == wall.position.y or w.position.y == wall.position.y + 1) and \
-                (w.position.x == wall.position.x or w.position.x == wall.position.x + 1):
-                    return False
-
-        return True
-
-
-    def is_valid_wall_old(self, wall: Wall, walls: Optional[List[Wall]] = None) -> bool:
-        # Utiliser self.walls par défaut si aucun mur simulé n’est passé
-        walls = walls if walls is not None else self.walls
-
-        if wall.orientation not in ["horizontal", "vertical"]:
-            return False
-
-        # Pour un mur, la position de référence doit être dans les bornes (entre 0 et 7)
-        if not (0 <= wall.position.x < 8 and 0 <= wall.position.y < 8):
-            return False
-
-        # Ajout de conditions pour ne pas sortir de la grille
-        # un mur horizontal couvre (x,y) et (x+1,y),
-        # un mur vertical couvre (x,y) et (x,y+1)
-        if wall.orientation == "horizontal" and wall.position.x >= 7:
-            return False
-        if wall.orientation == "vertical" and wall.position.y >= 7:
-            return False
-
-        # Empêcher le chevauchement de murs
-        for w in walls:
-            if w.orientation == wall.orientation:
-                if wall.orientation == "horizontal":
-                    # Un mur horizontal placé à (x, y) bloque les passages entre
-                    # (x,y)<->(x,y+1) et (x+1,y)<->(x+1,y+1)
-                    # Deux murs horizontaux sur la même ligne se chevauchent
-                    # si la distance entre leurs positions x est <= 1.
-                    # if w.position.y == wall.position.y and abs(w.position.x - wall.position.x) <= 1:
-                    if w.position.y == wall.position.y and w.position.x == wall.position.x:
-                        return False
-                elif wall.orientation == "vertical":
-                    # Un mur vertical placé à (x, y) bloque les passages entre
-                    # (x,y)<->(x+1,y) et (x,y+1)<->(x+1,y+1)
-                    # Deux murs verticaux sur la même colonne se chevauchent
-                    # si la distance entre leurs positions y est <= 1.
-                    # if w.position.x == wall.position.x and abs(w.position.y - wall.position.y) <= 1:
-                    if w.position.x == wall.position.x and w.position.y == wall.position.y:
-                        return False
-            else:
-                # ajouter une vérification pour empêcher l'intersection
-                # (empêcher qu'un mur horizontal et un mur vertical se croisent
-                # de manière à couvrir le même segment. les murs ne doivent pas
-                # se chevaucher, même en travers.
-                if wall.orientation == "horizontal" and w.orientation == "vertical":
-                    # Cas 1
-                    if wall.position.x == w.position.x and wall.position.y == w.position.y:
-                        return False
-                    # Cas 2 (attention à ne pas sortir de la grille)
-                    if wall.position.x + 1 == w.position.x and wall.position.y - 1 == w.position.y and wall.position.y - 1 >= 0:
-                        return False
-                elif wall.orientation == "vertical" and w.orientation == "horizontal":
-                    # Cas 3
-                    if wall.position.x == w.position.x and wall.position.y == w.position.y:
-                        return False
-                    # Cas 4 (attention à ne pas sortir de la grille)
-                    if wall.position.x - 1 == w.position.x and wall.position.y + 1 == w.position.y and wall.position.x - 1 >= 0:
-                        return False
-
-        return True
 
    
   
-    # def is_valid_wall(self, wall: Wall, walls: Optional[List[Wall]] = None) -> bool:
-    #     walls = walls if walls is not None else self.walls
-    #     # print(f"[DEBUG] Testing wall at {wall.position.x},{wall.position.y} orientation={wall.orientation} against {len(walls)} existing walls")
-
-    #     if wall.orientation not in ["horizontal", "vertical"]:
-    #         #print(f"[DEBUG] Invalid orientation: {wall.orientation}")
-    #         return False
-
-    #     # Bornes de la grille (0 <= x,y < 8)
-    #     if not (0 <= wall.position.x < 8 and 0 <= wall.position.y < 8):
-    #         #print(f"[DEBUG] Out of bounds: x={wall.position.x}, y={wall.position.y}")
-    #         return False
-
-    #     # Les checks de sortie de grille pour orientation ne sont plus nécessaires
-
-    #     for w in walls:
-    #         # --- Cas 1 : même orientation => chevauchement interdit
-    #         if w.orientation == wall.orientation:
-    #             if wall.orientation == "horizontal":
-    #                 # Empêche tout chevauchement ou contiguïté horizontale
-    #                 if w.position.y == wall.position.y and abs(w.position.x - wall.position.x) <= 1:
-    #                     #print(f"[DEBUG] Overlap horizontal with existing at x={w.position.x}, y={w.position.y}")
-    #                     return False
-    #             elif wall.orientation == "vertical":
-    #                 if w.position.x == wall.position.x and abs(w.position.y - wall.position.y) <= 1:
-    #                     #print(f"[DEBUG] Overlap vertical with existing at x={w.position.x}, y={w.position.y}")
-    #                     return False
-
-    #         # --- Cas 2 : orientations différentes => croisement interdit
-    #         else:
-    #             # Croisement interdit: murs se croisent en T
-    #             # Horizontal vs Vertical
-    #             if wall.orientation == "horizontal" and w.orientation == "vertical":
-    #                 # Interdiction si vertical commence dans l’intervalle du horizontal
-    #                 if (wall.position.x <= w.position.x <= wall.position.x + 1 and
-    #                     w.position.y == wall.position.y):
-    #                     #print(f"[DEBUG] Crossing detected at {wall.position.x},{wall.position.y} with vertical {w.position.x},{w.position.y}")
-    #                     return False
-
-    #             elif wall.orientation == "vertical" and w.orientation == "horizontal":
-    #                 if (wall.position.x == w.position.x and
-    #                     wall.position.y <= w.position.y <= wall.position.y + 1):
-    #                     #print(f"[DEBUG] Crossing detected at {wall.position.x},{wall.position.y} with horizontal {w.position.x},{w.position.y}")
-    #                     return False
-
-    #     #print(f"[DEBUG] Wall valid at {wall.position.x},{wall.position.y}")
-    #     return True
-    # def is_valid_wall(self, wall: Wall, walls: Optional[List[Wall]] = None) -> bool:
-    #     """
-    #     Vérifie si un mur peut être placé légalement :
-    #     - Orientation correcte
-    #     - Position dans la grille
-    #     - Pas de superposition exacte
-    #     - Pas de chevauchement partiel (même orientation)
-    #     - Pas de croisement en croix (mur horizontal et vertical au même centre)
-    #     """
-    #     walls = walls if walls is not None else self.walls
-
-    #     # 1. Vérifie orientation valide
-    #     if wall.orientation not in ["horizontal", "vertical"]:
-    #         return False
-
-    #     # 2. Vérifie limites de la grille (0 à 7 car un mur couvre 2 cases)
-    #     if not (0 <= wall.position.x < 8 and 0 <= wall.position.y < 8):
-    #         return False
-
-    #     # 3. Récupère les cellules couvertes par le mur à placer
-    #     wall_cells = (
-    #         {(wall.position.x, wall.position.y), (wall.position.x + 1, wall.position.y)}
-    #         if wall.orientation == "horizontal"
-    #         else {(wall.position.x, wall.position.y), (wall.position.x, wall.position.y + 1)}
-    #     )
-
-    #     for w in walls:
-    #         # 4. Superposition exacte (même position et même orientation)
-    #         if w.position == wall.position and w.orientation == wall.orientation:
-    #             return False
-
-    #         # 5. Récupère les cellules couvertes par le mur existant
-    #         w_cells = (
-    #             {(w.position.x, w.position.y), (w.position.x + 1, w.position.y)}
-    #             if w.orientation == "horizontal"
-    #             else {(w.position.x, w.position.y), (w.position.x, w.position.y + 1)}
-    #         )
-
-    #         # 6. Chevauchement partiel (si même orientation et cases partagées)
-    #         if w.orientation == wall.orientation and wall_cells & w_cells:
-    #             return False
-
-    #         # 7. Croisement en croix : cas très précis d'intersection centrale
-    #         # 7. Croisement exact en croix : mur horizontal et vertical se croisent au même point central
-    #         if wall.orientation == "horizontal" and w.orientation == "vertical":
-    #             if (wall.position.x + 1 == w.position.x and
-    #                 wall.position.y == w.position.y):
-    #                 return False
-
-    #         elif wall.orientation == "vertical" and w.orientation == "horizontal":
-    #             if (wall.position.x == w.position.x and
-    #                 wall.position.y + 1 == w.position.y):
-    #                 return False
-
-
-
-    #     return True
-    # def is_valid_wall(self, wall: Wall, walls: Optional[List[Wall]] = None) -> bool:
-    #     """
-    #     Vérifie la validité d’un mur à placer selon les règles officielles :
-    #     - Position et orientation valides
-    #     - Pas de superposition
-    #     - Pas de chevauchement partiel (même orientation)
-    #     - Pas de croisement central entre deux murs perpendiculaires
-    #     """
-    #     walls = walls if walls is not None else self.walls
-
-    #     if wall.orientation not in ["horizontal", "vertical"]:
-    #         return False
-
-    #     if not (0 <= wall.position.x < 8 and 0 <= wall.position.y < 8):
-    #         return False
-
-    #     if wall.orientation == "horizontal":
-    #         wall_cells = {(wall.position.x, wall.position.y), (wall.position.x + 1, wall.position.y)}
-    #     else:
-    #         wall_cells = {(wall.position.x, wall.position.y), (wall.position.x, wall.position.y + 1)}
-
-    #     for w in walls:
-    #         if w.orientation == "horizontal":
-    #             w_cells = {(w.position.x, w.position.y), (w.position.x + 1, w.position.y)}
-    #         else:
-    #             w_cells = {(w.position.x, w.position.y), (w.position.x, w.position.y + 1)}
-
-    #         # 1. Superposition exacte
-    #         if wall.position == w.position and wall.orientation == w.orientation:
-    #             return False
-
-    #         # 2. Chevauchement partiel si même orientation (au moins une cellule en commun)
-    #         if wall.orientation == w.orientation and wall_cells & w_cells:
-    #             return False
-
-    #         # 3. Croisement en croix stricte : exactement 1 cellule partagée + orientations différentes
-    #         if wall.orientation == "horizontal" and w.orientation == "vertical":
-    #             if wall.position.x + 1 == w.position.x and wall.position.y == w.position.y:
-    #                 return False
-
-    #         elif wall.orientation == "vertical" and w.orientation == "horizontal":
-    #             if wall.position.x == w.position.x and wall.position.y + 1 == w.position.y:
-    #                 return False
-
-
-    #     return True
     def is_valid_wall(self, wall: Wall, walls: Optional[List[Wall]] = None) -> bool:
         """
         Vérifie si un mur est légal selon les règles officielles de Quoridor :
@@ -559,72 +315,6 @@ class QuoridorGame:
 
             
         return True
-
-    # def is_valid_wall(self, wall: Wall, walls: Optional[List[Wall]] = None) -> bool:
-    #     walls = walls if walls is not None else self.walls
-
-    #     if wall.orientation not in ["horizontal", "vertical"]:
-    #         return False
-
-    #     if not (0 <= wall.position.x < 8 and 0 <= wall.position.y < 8):
-    #         return False
-
-    #     if wall.orientation == "horizontal":
-    #         wall_cells = {(wall.position.x, wall.position.y), (wall.position.x + 1, wall.position.y)}
-    #     else:
-    #         wall_cells = {(wall.position.x, wall.position.y), (wall.position.x, wall.position.y + 1)}
-
-    #     for w in walls:
-    #         if w.orientation == "horizontal":
-    #             existing_cells = {(w.position.x, w.position.y), (w.position.x + 1, w.position.y)}
-    #         else:
-    #             existing_cells = {(w.position.x, w.position.y), (w.position.x, w.position.y + 1)}
-
-    #         # 1. Superposition exacte
-    #         if wall.orientation == w.orientation and wall.position == w.position:
-    #             return False
-
-    #         # 2. Chevauchement partiel interdit (même orientation + cases partagées)
-    #         if wall.orientation == w.orientation and wall_cells & existing_cells:
-    #             return False
-
-    #         # 3. Croisement autorisé uniquement si c’est un croisement central exact
-            
-    #         if wall.orientation != w.orientation:
-    #             intersection = wall_cells & existing_cells
-    #             if len(intersection) == 1:
-    #                 i = next(iter(intersection))
-
-    #                 # Vérifie si le croisement est un "+" parfait indépendamment de l’ordre
-    #                 if (
-    #                     (wall.orientation == "horizontal" and
-    #                     w.orientation == "vertical" and
-    #                     wall.position == Position(x=w.position.x - 1, y=w.position.y) and
-    #                     i == (w.position.x, w.position.y))
-    #                     or
-    #                     (wall.orientation == "vertical" and
-    #                     w.orientation == "horizontal" and
-    #                     wall.position == Position(x=w.position.x, y=w.position.y - 1) and
-    #                     i == (w.position.x, w.position.y))
-    #                     or
-    #                     (w.orientation == "horizontal" and
-    #                     wall.orientation == "vertical" and
-    #                     w.position == Position(x=wall.position.x - 1, y=wall.position.y) and
-    #                     i == (wall.position.x, wall.position.y))
-    #                     or
-    #                     (w.orientation == "vertical" and
-    #                     wall.orientation == "horizontal" and
-    #                     w.position == Position(x=wall.position.x, y=wall.position.y - 1) and
-    #                     i == (wall.position.x, wall.position.y))
-    #                 ):
-    #                     continue  # croisement central autorisé 
-
-    #             return False  # tout autre croisement est interdit 
-
-
-
-    #     return True
-
 
 
 
@@ -787,7 +477,6 @@ class QuoridorGame:
         - Privilégie les déplacements vers l'avant
         - Ne pose un mur que si l'adversaire est proche de gagner
         """
-        import random
 
         idx = game_state.current_turn - 1
         current_player = game_state.players[idx]
@@ -893,36 +582,6 @@ class QuoridorGame:
     #     else:
     #         raise Exception("Aucun coup légal trouvé")
 
-    # def evaluate_pawn_moves(self, player: Player, game_state: GameState) -> Tuple[int, Position]:
-    #     """
-    #     Évalue tous les déplacements valides du joueur donné (avec A*)
-    #     et retourne le meilleur déplacement accompagné de son score.
-    #     """
-    #     best_score = float("-inf")
-    #     best_position = None
-
-    #     valid_moves = self.get_valid_pawn_moves(player, game_state)
-
-    #     for move in valid_moves:
-    #         # Créer un faux joueur pour ne pas modifier l'état réel
-    #         simulated_player = Player(
-    #             id=player.id,
-    #             pawn=move,
-    #             remaining_walls=player.remaining_walls
-    #         )
-
-    #         path_len = self.a_star(simulated_player, game_state)
-
-    #         if math.isinf(path_len):
-    #             continue  # ce coup mène à une impasse
-
-    #         score = max(0, 100 - path_len)  # plus le chemin est court, mieux c'est
-
-    #         if score > best_score:
-    #             best_score = score
-    #             best_position = move
-
-    #     return best_score, best_position
     def evaluate_pawn_moves(self, player: Player, game_state: GameState) -> Tuple[float, Position]:
         """
         Évalue les déplacements valides du joueur en priorisant les plus courts
@@ -1138,7 +797,7 @@ class QuoridorGame:
                     score = cost + 1 + self.heuristic((pos.x, pos.y), goal_y)
                     heapq.heappush(open_set, (score, cost + 1, (pos.x, pos.y)))
 
-        # Si aucun chemin trouvé (rare)
+        # Si aucun chemin trouvé (normalement impossible) 
         return float("inf")
 
 
@@ -1253,7 +912,7 @@ class QuoridorGame:
                         })
                 except Exception:
                     self.load_state(snap)
-                    continue  # Coup invalide → on ignore
+                    continue  # Coup invalide,on ignore
 
                 val = self.minimax_ab(depth - 1, alpha, beta, False)
                 self.load_state(snap)
@@ -1411,26 +1070,6 @@ class QuoridorGame:
                 print(wall_line)
 
 
-    def print_board_from_state(self, state: GameState):
-        size = 9
-        wall_map = {(w.position.x, w.position.y, w.orientation): True for w in state.walls}
-
-        for y in range(size):
-            # Ligne de pions
-            row = ""
-            for x in range(size):
-                player_here = next((p.id for p in state.players if p.pawn.x == x and p.pawn.y == y), None)
-                cell = str(player_here) if player_here else "."
-                row += f" {cell} "
-                row += "|" if wall_map.get((x, y, "vertical")) else " "
-            print(row)
-
-            # Ligne de murs horizontaux
-            wall_row = ""
-            for x in range(size):
-                wall_row += "===" if wall_map.get((x, y, "horizontal")) else "   "
-                wall_row += " "
-            print(wall_row)
 
     def evaluate_state_2(self) -> float:
         """
