@@ -9,10 +9,8 @@ from typing import List,Tuple,Optional
 logger = logging.getLogger("quoridor")
 import math
 import copy
-#python -m app.models.run_ais_timed
 
-#fix print_board / has_path pour prendre en compte les saut et diag + compatibilité avec 4 joueurs / fix buggs de wall_block (en créant meth interne)
-# On sort plus de la borne de la grille
+
 class QuoridorGame:
     print("===> game.py correctement chargé")
 
@@ -782,42 +780,6 @@ class QuoridorGame:
             raise Exception("Aucun coup possible pour l’IA (move_a_star)")
     
     
-
-    # def ai_move_random(self, game_state: GameState):
-    #     """
-    #     Une IA simple qui effectue aléatoirement un coup légal.
-    #     """
-    #     idx = game_state.current_turn - 1
-    #     current_player = game_state.players[idx]
-    #     opponent = game_state.players[1 - idx]
-
-    #     legal_moves = []
-    
-    #     # Obtenir tous les déplacements valides pour le pion
-    #     valid_pawn_moves = self.get_valid_pawn_moves(current_player, game_state)
-    #     for move in valid_pawn_moves:
-    #         legal_moves.append(("move", move))
-    
-    #     # Ajouter les placements de murs valides
-    #     if current_player.remaining_walls > 0:
-    #         for x in range(8):
-    #             for y in range(8):
-    #                 for orientation in ["horizontal", "vertical"]:
-    #                     test_wall = Wall(position=Position(x=x, y=y), orientation=orientation)
-    #                     if self.is_valid_wall(test_wall):
-    #                         legal_moves.append(("wall", test_wall))
-    
-    #     # Si aucun coup légal n'est disponible, lever une exception
-    #     if not legal_moves:
-    #         raise Exception("Aucun coup légal trouvé pour l'IA")
-    
-    #     # Choisir un coup aléatoire parmi les coups légaux
-    #     move_type, move_value = random.choice(legal_moves)
-    #     if move_type == "move":
-    #         if self.move_pawn(current_player.id, move_value.dict()):
-    #             return # partie est finie 
-    #     else:
-    #         self.place_wall(current_player.id, move_value.dict())
     
     def ai_move_random(self, game_state: GameState):
         """
@@ -839,6 +801,7 @@ class QuoridorGame:
             if (opponent.id == 1 and oy >= 4) or (opponent.id == 2 and oy <= 2):
                 ox = opponent.pawn.x
                 possible_walls = []
+                # murs autour du pion averse
                 for dx in [-1, 0, 1]:
                     for dy in [-1, 0, 1]:
                         x, y = ox + dx, oy + dy
@@ -847,22 +810,22 @@ class QuoridorGame:
                                 wall = Wall(position=Position(x=x, y=y), orientation=orientation)
                                 if self.is_valid_wall(wall):
                                     possible_walls.append(wall)
+                   
                 if possible_walls:
                     chosen_wall = random.choice(possible_walls)
                     self.place_wall(current_player.id, chosen_wall.dict())
                     return  
 
-        # 2. Sinon, se déplacer (privilégier l’avant)
         valid_moves = self.get_valid_pawn_moves(current_player, game_state)
         forward_moves = []
         other_moves = []
-
+        # 2. Séparer les mouvements valides en avant et autres
         for move in valid_moves:
             if (move.y - current_player.pawn.y) == direction:
                 forward_moves.append(move)
             else:
                 other_moves.append(move)
-
+        #  Sinon, se déplacer (privilégier l’avant)
         if forward_moves:
             move = random.choice(forward_moves)
         elif other_moves:
@@ -1055,51 +1018,6 @@ class QuoridorGame:
 
         return moves
 
-    # def evaluate_best_wall_placement(
-    #         self, player: Player, opponent: Player,
-    #         game_state: GameState) -> Tuple[int, Optional[Wall]]:
-    #     best_score = float("-inf")
-    #     best_wall = None
-
-    #     # On travaille sur une copie de l'état pour ne pas polluer l'état réel
-    #     base_walls = copy.deepcopy(game_state.walls)
-
-    #     for x in range(8):  # les murs ne peuvent être posés qu’entre 0 et 7
-    #         for y in range(8):
-    #             for orientation in ["horizontal", "vertical"]:
-    #                 wall = Wall(position=Position(x=x, y=y), orientation=orientation)
-
-    #                 # Simuler les murs temporairement
-    #                 simulated_walls = base_walls + [wall]
-    #                 simulated_game_state = GameState(
-    #                     board=game_state.board,
-    #                     players=game_state.players,
-    #                     walls=simulated_walls,
-    #                     current_turn=game_state.current_turn,
-    #                     game_over=game_state.game_over,
-    #                     winner_id=game_state.winner_id,
-    #                 )
-
-    #                 # Vérifier si ce mur est valide dans la simulation
-    #                 if not self.is_valid_wall(wall, walls=game_state.walls):
-    #                     continue
-
-    #                 # Vérifier si ce mur bloque complètement un joueur
-    #                 if not self.has_path(player.pawn, player.id, simulated_game_state) or not self.has_path(opponent.pawn, opponent.id, simulated_game_state):
-    #                     continue
-
-    #                 # Évaluer les longueurs de chemin
-    #                 my_path_len = self.a_star(player, simulated_game_state)
-    #                 opp_path_len = self.a_star(opponent, simulated_game_state)
-
-    #                 # Heuristique : on veut ralentir l'adversaire plus qu'on ne se ralentit
-    #                 score = max(0, 100 - opp_path_len) - 0.5 * max(0, 100 - my_path_len)
-
-    #                 if score > best_score:
-    #                     best_score = score
-    #                     best_wall = wall
-
-    #     return best_score, best_wall
     def evaluate_best_wall_placement(
         self, player: Player, opponent: Player, game_state: GameState
     ) -> Tuple[float, Optional[Wall]]:
@@ -1309,63 +1227,67 @@ class QuoridorGame:
         #print("fin evaluate state")
 
         return float(op_len - my_len)
-
-    def minimax_ab(self,
-                    depth: int,
-                    alpha: float,
-                    beta: float,
-                    maximizing: bool) -> float:
+    def minimax_ab(self, depth: int, alpha: float, beta: float, maximizing: bool) -> float:
         """
-        Retourne la valeur Minimax de l’état courant,
-        avec élagage alpha‑beta.
+        Minimax avec élagage alpha-bêta et tri intelligent des coups.
+        Gère aussi les exceptions (ex : murs invalides).
         """
         # Cas terminal
         if depth == 0 or self.game_over:
-            
             return self.evaluate_state()
+
+        state = self.get_game_state()
+        moves = self.get_filtered_moves(state, maximizing)  # coups filtrés + triés
 
         if maximizing:
             max_eval = -math.inf
-            for kind, move in self.get_all_moves():
+            for kind, move in moves:
                 snap = self.save_state()
-                # Applique le coup
-                if kind == "move":
-                    self.move_pawn(self.current_turn,
-                                    {"x": move.x, "y": move.y})
-                else:  # "wall"
-                    self.place_wall(self.current_turn,
-                                    {"position": move.position.dict(),
-                                        "orientation": move.orientation}) # en pydantic dict => model_dump
+                try:
+                    if kind == "move":
+                        self.move_pawn(self.current_turn, {"x": move.x, "y": move.y})
+                    else:
+                        self.place_wall(self.current_turn, {
+                            "position": move.position.dict(),
+                            "orientation": move.orientation
+                        })
+                except Exception:
+                    self.load_state(snap)
+                    continue  # Coup invalide → on ignore
+
                 val = self.minimax_ab(depth - 1, alpha, beta, False)
                 self.load_state(snap)
 
                 max_eval = max(max_eval, val)
-                alpha    = max(alpha, val)
+                alpha = max(alpha, val)
                 if beta <= alpha:
-                    break
-            #print(f"Maximizing : valeur maximale trouvée = {max_eval}")
+                    break  # élagage
 
             return max_eval
 
         else:
             min_eval = math.inf
-            for kind, move in self.get_all_moves():
+            for kind, move in moves:
                 snap = self.save_state()
-                if kind == "move":
-                    self.move_pawn(self.current_turn,
-                                    {"x": move.x, "y": move.y})
-                else:
-                    self.place_wall(self.current_turn,
-                                    {"position": move.position.dict(),
-                                        "orientation": move.orientation})
+                try:
+                    if kind == "move":
+                        self.move_pawn(self.current_turn, {"x": move.x, "y": move.y})
+                    else:
+                        self.place_wall(self.current_turn, {
+                            "position": move.position.dict(),
+                            "orientation": move.orientation
+                        })
+                except Exception:
+                    self.load_state(snap)
+                    continue
+
                 val = self.minimax_ab(depth - 1, alpha, beta, True)
                 self.load_state(snap)
 
                 min_eval = min(min_eval, val)
-                beta     = min(beta, val)
+                beta = min(beta, val)
                 if beta <= alpha:
                     break
-            #print(f"Minimizing : valeur minimale trouvée = {min_eval}")
 
             return min_eval
 
@@ -1374,27 +1296,62 @@ class QuoridorGame:
         Retourne le coup optimal (type, objet) pour le joueur courant
         en explorant jusqu’à 'depth'
         """
-        best_val  = -math.inf
+        best_val = -math.inf
         best_move = None
+
         for kind, move in self.get_all_moves():
             snap = self.save_state()
-            if kind == "move":
-                self.move_pawn(self.current_turn,
-                                {"x": move.x, "y": move.y})
-            else:
-                self.place_wall(self.current_turn,
-                                {"position": move.position.dict(),
-                                    "orientation": move.orientation})
-            val = self.minimax_ab(depth - 1, -math.inf, math.inf, False)
-            self.load_state(snap)
+            try:
+                if kind == "move":
+                    self.move_pawn(self.current_turn, {"x": move.x, "y": move.y})
+                else:
+                    self.place_wall(self.current_turn, {
+                        "position": move.position.dict(),
+                        "orientation": move.orientation
+                    })
 
-            if val > best_val:
-                best_val  = val
-                best_move = (kind, move)
+                val = self.minimax_ab(depth - 1, -math.inf, math.inf, False)
 
-        #print(f"Meilleur coup trouvé : {best_move} avec une valeur de {best_val}")
+                if val > best_val:
+                    best_val = val
+                    best_move = (kind, move)
+
+            except Exception as e:
+                #print(f"Erreur lors du traitement de {kind} {move}: {e}")
+                pass  # Ignorer ce move et continuer avec les autres
+
+            finally:
+                self.load_state(snap)
 
         return best_move
+
+
+    def get_filtered_moves(self, state, maximizing) -> list[tuple[str, object]]:
+        curr = next(p for p in state.players if p.id == state.current_turn)
+        opp = next(p for p in state.players if p.id != state.current_turn)
+
+        moves = self.get_all_moves()
+        opp_path_len = self.a_star(opp, state)
+
+        filtered = []
+        for kind, move in moves:
+            if kind == "wall":
+                if curr.remaining_walls <= 0:
+                    continue
+                if opp_path_len > 6:
+                    continue
+                # Ignore les murs trop éloignés de l'adversaire 
+                if abs(move.position.x - opp.pawn.x) > 1 or abs(move.position.y - opp.pawn.y) > 1:
+                    continue
+            filtered.append((kind, move))
+
+        # Tri : déplacements prioritaires
+        def move_priority(m):
+            kind, move = m
+            return -move.y if curr.id == 1 and kind == "move" else move.y if kind == "move" else 0
+        
+        # Tri des coups par priorité croissante/décroissante selon le joueur (minimisant/maximisant)
+        return sorted(filtered, key=move_priority, reverse=maximizing)
 
 
     # ──────────────── MINIMAX apla beta ────────────────
@@ -1514,5 +1471,5 @@ class QuoridorGame:
         return wins / simulations
 
 
-
+#uvicorn app.main:app --reload --port 8000
 

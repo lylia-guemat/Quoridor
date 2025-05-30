@@ -347,12 +347,4 @@ if __name__ == "__main__":
 
 
 
-
-
-
-if __name__ == '__main__':
-    unittest.main()
-
-
-
 #python -m unittest Quoridor_backend/app/models/test_quoridor.py
