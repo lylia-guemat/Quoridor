@@ -71,11 +71,13 @@
         </ul>
       </li>
       <li>On ne peut pas sauter par-dessus un mur.</li>
-      <li>Si deux pions sont côte à côte, on peut sauter par-dessus si la case derrière est libre.</li>
+      <li>Si deux pions sont adjacents, on peut sauter par-dessus si la case derrière est libre.</li>
+      <li>Si deux pions sont adjacents et la case derrière est bloquée par un mur,
+        alors le joueur peut sauter en diagonale.</li>
       <li>Un mur ne peut jamais bloquer totalement un joueur : un chemin vers sa ligne d’arrivée doit toujours exister.
       </li>
       <li>Chaque joueur possède un nombre limité de murs (10 chacun à 2 joueurs, 5 chacun à 4 joueurs).</li>
-    </ul>
+
 
     <div class="note">
       🧠 <strong>Astuce :</strong> Utilisez vos murs stratégiquement pour ralentir l'adversaire, mais gardez toujours un
