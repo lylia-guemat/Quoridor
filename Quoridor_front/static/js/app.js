@@ -13,6 +13,35 @@ document.addEventListener('DOMContentLoaded', () => {
         ({ isVsAI, gameMode, aiLevel } = window.APP_CONFIG);
       }
 
+      function updateCurrentPlayerUI() {
+        // gameState.current_turn vaut 1, 2, (éventuellement 3, 4…)
+        const turn = gameState.current_turn;
+
+        // On récupère chaque conteneur joueur
+        const player1Div = document.querySelector('.player-1');
+        const player2Div = document.querySelector('.player-2');
+        const player3Div = document.querySelector('.player-3'); // si besoin
+        const player4Div = document.querySelector('.player-4'); // si besoin
+
+        // On retire systématiquement `active` de tous les joueurs (au cas où)
+        if (player1Div) player1Div.classList.remove('active');
+        if (player2Div) player2Div.classList.remove('active');
+        if (player3Div) player3Div.classList.remove('active');
+        if (player4Div) player4Div.classList.remove('active');
+
+        // Puis on ajoute `active` au joueur dont c'est le tour
+        if (turn === 1 && player1Div) {
+            player1Div.classList.add('active');
+        } else if (turn === 2 && player2Div) {
+            player2Div.classList.add('active');
+        } else if (turn === 3 && player3Div) {
+            player3Div.classList.add('active');
+        } else if (turn === 4 && player4Div) {
+            player4Div.classList.add('active');
+        }
+    }
+
+
     // Initialisation du plateau et récupération du state
     createBoard();
     fetchGameState();
@@ -73,6 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
             gameState = state;
             updateBoard();
             updateUI();
+            updateCurrentPlayerUI()
           })
           .catch(err => console.error("Erreur init game:", err));
       }      
@@ -144,6 +174,8 @@ document.addEventListener('DOMContentLoaded', () => {
             popup.classList.add('hidden');
             if (restart_btn2) restart_btn2.classList.add('hidden');
         }
+
+        updateCurrentPlayerUI();
     }
 
     // function showValidMoves(row, col) {
@@ -329,6 +361,7 @@ document.addEventListener('DOMContentLoaded', () => {
             selectedPawn = null;
             updateBoard();
             updateUI();
+            updateCurrentPlayerUI();
           });
       }
 

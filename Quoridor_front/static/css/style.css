@@ -186,13 +186,13 @@ h1 {
 }
 
 .wall-horizontal-space.wall-active, .wall-horizontal-space.wall-preview {
-    background-color: #4a4a4a;
+    background-color: #292828;
     height: 8px;
     margin-top: 2px;
 }
 
 .wall-vertical-space.wall-active, .wall-vertical-space.wall-preview {
-    background-color: #4a4a4a;
+    background-color: #292828;
     width: 8px;
     margin-left: 2px;
 }
@@ -226,7 +226,7 @@ h1 {
 
 
 .wall-active {
-    background-color: #8d6e63 !important;
+    background-color: #372923 !important;
 }
 
 /* Style pour les pions */
@@ -330,14 +330,14 @@ button:hover {
 
 /* Prévisualisation des murs */
 .wall-preview {
-    background-color: rgba(141, 110, 99, 0.5);
+    background-color: rgba(75, 56, 49, 0.5);
     position: relative;
 }
 
 .wall-preview::after {
     content: '';
     position: absolute;
-    background-color: rgba(141, 110, 99, 0.5);
+    background-color: rgba(75, 56, 49, 0.5);
     top: 0;
     left: 100%;
     width: 100%;
@@ -366,6 +366,56 @@ button:hover {
     min-width: 150px;
 }
 
+/* Joueur 1 (bleu) : alterne entre fond bleu pâle et fond gris par défaut */
+@keyframes blink-blue {
+
+    0%,
+    100% {
+        background-color: rgba(33, 149, 243, 0.285);
+    }
+
+    50% {
+        background-color: #f0f0f0;
+    }
+}
+
+/* Joueur 2 (rouge) : alterne entre fond rouge pâle et fond gris par défaut */
+@keyframes blink-red {
+
+    0%,
+    100% {
+        background-color: rgba(244, 67, 54, 0.285);
+    }
+
+    50% {
+        background-color: #f0f0f0;
+    } }
+
+/* Joueur 3 (vert) : alterne entre fond vert pâle et fond gris par défaut */
+@keyframes blink-orange {
+
+    0%,
+    100% {
+        background-color: rgba(243, 142, 33, 0.285);
+    }
+
+    50% {
+        background-color: #f0f0f0;
+    }
+}
+
+/* Joueur 4 (orange) : alterne entre fond orange pâle et fond gris par défaut */
+@keyframes blink-green {
+
+    0%,
+    100% {
+        background-color: rgba(136, 244, 54, 0.285);
+    }
+
+    50% {
+        background-color: #f0f0f0;
+    } }
+
 .player-1 {
     border-left: 4px solid #2196f3;
 }
@@ -384,6 +434,22 @@ button:hover {
 
 .player h3 {
     margin: auto;
+}
+
+.player-1.active {
+    animation: blink-blue 1s infinite;
+}
+
+.player-2.active {
+    animation: blink-red 1s infinite;
+}
+
+.player-3.active {
+    animation: blink-green 1s infinite;
+}
+
+.player-4.active {
+    animation: blink-orange 1s infinite;
 }
 
 /* Animation de pulsation pour les mouvements valides */
