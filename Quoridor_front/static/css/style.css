@@ -9,6 +9,23 @@ body {
     align-items: center;
     justify-content: center;
 }
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  overflow: hidden; /* interdit le scroll global */
+}
+
+body {
+  display: flex;
+  justify-content: center; /* centre horizontalement */
+  align-items: flex-start; /* ancre en haut verticalement */
+}
+
+.container {
+  transform-origin: top left;
+}
+
 
 .welcome-container, .mode-selection-container, .difficulty-container {
     text-align: center;

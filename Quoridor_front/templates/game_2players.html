@@ -65,6 +65,22 @@
         </div>
     </div>
     <script src="/static/js/app.js"></script>
+    <script>
+function fitToScreen() {
+  const container = document.querySelector('.container');
+  container.style.transform = 'scale(1)'; // reset scale
+
+  const scaleX = window.innerWidth / container.scrollWidth;
+  const scaleY = window.innerHeight / container.scrollHeight;
+  const scale = Math.min(scaleX, scaleY);
+
+  container.style.transform = `scale(${scale})`;
+}
+
+window.addEventListener('load', fitToScreen);
+window.addEventListener('resize', fitToScreen);
+</script>
+
 </body>
 
 </html>
